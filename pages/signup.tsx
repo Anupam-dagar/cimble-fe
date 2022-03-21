@@ -1,0 +1,69 @@
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  FormControl,
+  FormLabel,
+  Image,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { NextPage } from "next";
+import Link from "next/link";
+
+const SignupPage: NextPage = () => {
+  return (
+    <Center
+      bgGradient="linear(to-tr, #7AE7C7, #FFD3BA)"
+      w="100%"
+      maxWidth="100%"
+      h="100vh"
+    >
+      <Box boxShadow="dark-lg" bg="gray.50" w="md">
+        <Image src="/images/cimbletemplogo.png" alt="logo" />
+        <FormControl p={6}>
+          <VStack spacing="2">
+            <Container w="full">
+              <FormLabel htmlFor="first_name">First Name</FormLabel>
+              <Input borderRadius={50} id="first_name" type="text" />
+            </Container>
+            <Container w="full">
+              <FormLabel htmlFor="last_name">Last Name</FormLabel>
+              <Input borderRadius={50} id="last_name" type="text" />
+            </Container>
+            <Container w="full">
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input borderRadius={50} id="email" type="email" />
+            </Container>
+            <Container w="full">
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input borderRadius={50} id="password" type="password" />
+            </Container>
+            <Container w="full" pt={4}>
+              <Button
+                w="full"
+                borderRadius={50}
+                colorScheme="teal"
+                variant="solid"
+              >
+                Register
+              </Button>
+              <Text fontSize="md" mt={4}>
+                Already have an account?{" "}
+                <Link href="/login">
+                  <Button colorScheme="teal" variant="link">
+                    Login Now
+                  </Button>
+                </Link>
+              </Text>
+            </Container>
+          </VStack>
+        </FormControl>
+      </Box>
+    </Center>
+  );
+};
+
+export default SignupPage;
