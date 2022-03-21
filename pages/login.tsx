@@ -26,8 +26,6 @@ import { LoginResponse } from "../models/loginResponse";
 
 const LoginPage: NextPage = () => {
   const [errorMessage, setError] = useState<string | null>(null);
-  const [isEmailInvalid, setIsEmailInvalid] = useState(false);
-  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
 
@@ -58,14 +56,11 @@ const LoginPage: NextPage = () => {
     Router.replace("/");
   };
 
-  const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    setIsEmailInvalid(e.target.value === "");
-  };
-
-  const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-    setIsPasswordInvalid(e.target.value === "");
+  const performFieldValidation = (includeNull: boolean) => {
+    return [email, password].some((data) => {
+      const result = data === "";
+      return result || (includeNull ? data === null : result);
+    });
   };
 
   return (
@@ -77,11 +72,7 @@ const LoginPage: NextPage = () => {
     >
       <Box boxShadow="dark-lg" bg="gray.50" w="md">
         <Image src="/images/cimbletemplogo.png" alt="logo" />
-        <FormControl
-          p={6}
-          isRequired
-          isInvalid={isEmailInvalid || isPasswordInvalid}
-        >
+        <FormControl p={6} isRequired isInvalid={performFieldValidation(false)}>
           <VStack spacing="2">
             <Container w="full">
               <FormLabel htmlFor="email">Email Address</FormLabel>
@@ -89,10 +80,10 @@ const LoginPage: NextPage = () => {
                 borderRadius={50}
                 id="email"
                 type="email"
-                onChange={onEmailChange}
-                isInvalid={isEmailInvalid}
+                onChange={(e) => setEmail(e.target.value)}
+                isInvalid={email === ""}
               />
-              {isEmailInvalid && (
+              {email === "" && (
                 <FormErrorMessage>Email is required.</FormErrorMessage>
               )}
             </Container>
@@ -102,10 +93,10 @@ const LoginPage: NextPage = () => {
                 borderRadius={50}
                 id="password"
                 type="password"
-                onChange={onPasswordChange}
-                isInvalid={isPasswordInvalid}
+                onChange={(e) => setPassword(e.target.value)}
+                isInvalid={password === ""}
               />
-              {isPasswordInvalid && (
+              {password === "" && (
                 <FormErrorMessage>Password is required.</FormErrorMessage>
               )}
             </Container>
@@ -116,6 +107,7 @@ const LoginPage: NextPage = () => {
                 colorScheme="teal"
                 variant="solid"
                 onClick={login}
+                isDisabled={performFieldValidation(true)}
               >
                 Login
               </Button>

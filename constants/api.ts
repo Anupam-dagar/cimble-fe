@@ -1,5 +1,6 @@
 import env from './env';
 
 export default {
-    LOGIN_URL: `${env.BACKEND_URL}/api/auth/login`
+    LOGIN_URL: `${env.BACKEND_URL}/api/auth/login`,
+    SIGNUP_URL: `${env.BACKEND_URL}/api/auth/signup`
 }
