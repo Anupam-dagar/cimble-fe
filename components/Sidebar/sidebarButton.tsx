@@ -3,6 +3,8 @@ import { Button, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import Router from "next/router";
 import Link from "next/link";
+import axios from "axios";
+import api from "../../constants/api";
 
 const SidebarButton = (props: { title: string; path: string }) => {
   const router = useRouter();
@@ -13,15 +15,14 @@ const SidebarButton = (props: { title: string; path: string }) => {
     return router.pathname === routeName ? true : false;
   };
 
-  const handleSidebarButtonClick = (
+  const handleSidebarButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
     path: string
   ) => {
     switch (path) {
       case "/logout": {
         e.preventDefault();
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
+        await axios.post(api.NEXT_LOGOUT_URL);
         Router.replace("/login");
       }
       default: {

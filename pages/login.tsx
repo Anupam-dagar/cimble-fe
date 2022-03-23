@@ -38,7 +38,7 @@ const LoginPage: NextPage = () => {
     let loginResponse;
     try {
       ({ data: loginResponse } = await axios.post<LoginResponse>(
-        api.LOGIN_URL,
+        api.NEXT_LOGIN_URL,
         data
       ));
     } catch (error: any) {
@@ -49,9 +49,6 @@ const LoginPage: NextPage = () => {
 
       return;
     }
-
-    localStorage.setItem("token", loginResponse.token);
-    localStorage.setItem("refreshToken", loginResponse.refreshToken);
 
     Router.replace("/");
   };
