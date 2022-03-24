@@ -47,7 +47,7 @@ const OrganisationsPage = ({ organisations }: { organisations: any[] }) => {
                 <Box boxShadow="outline" m={2} bg="gray.50" height={180}>
                   <OrganisationGridBox
                     organisationName={organisation.name}
-                    numProjects={0}
+                    numProjects={organisation.projects.length}
                   />
                 </Box>
               );
@@ -89,7 +89,7 @@ export const getServerSideProps = async (context: {
       },
     })
   ).data;
-  console.log(organisations);
+
   return {
     props: {
       token,
