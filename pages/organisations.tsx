@@ -36,6 +36,11 @@ const OrganisationsPage = ({
     setStateOrganisations(organisationContext.organisations);
   }, [organisationContext]);
 
+  const selectOrganisation = (id: string) => {
+    localStorage.setItem("organisation", id);
+    Router.push("/");
+  };
+
   return (
     <>
       <Center
@@ -66,6 +71,7 @@ const OrganisationsPage = ({
                     bg="gray.50"
                     height={180}
                     _hover={{ bg: "gray.100" }}
+                    onClick={() => selectOrganisation(organisation.id)}
                   >
                     <OrganisationGridBox
                       organisationName={organisation.name}
