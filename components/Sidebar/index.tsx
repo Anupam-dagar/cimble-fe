@@ -9,7 +9,7 @@ const Sidebar = () => {
     <Box>
       <Box display={{ sm: "none", xl: "block" }} position="fixed">
         <Box
-          bg="gray.50"
+          bg="white"
           transition="0.2s linear"
           w="260px"
           maxW="260px"
@@ -24,6 +24,7 @@ const Sidebar = () => {
           pe="20px"
           m={sidebarMargins}
           borderRadius={sidebarRadius}
+          boxShadow="md"
         >
           <SidebarContent />
         </Box>

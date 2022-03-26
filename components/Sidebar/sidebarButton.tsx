@@ -8,7 +8,7 @@ import api from "../../constants/api";
 
 const SidebarButton = (props: { title: string; path: string }) => {
   const router = useRouter();
-  const activeBg = useColorModeValue("white", "gray.700");
+  const activeBg = useColorModeValue("gray.200", "gray.700");
   const activeColor = useColorModeValue("gray.700", "white");
 
   const activeRoute = (routeName: string) => {
