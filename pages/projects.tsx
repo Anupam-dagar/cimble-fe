@@ -74,7 +74,7 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
               <Th>S. No.</Th>
               <Th>Name</Th>
               <Th isNumeric>Configurations</Th>
-              <Th>Action</Th>
+              <Th>Date of Creation</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -84,7 +84,7 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
                   <Td>{index + 1}</Td>
                   <Td>{project.name}</Td>
                   <Td isNumeric>{project.configurationsCount}</Td>
-                  <Td>Actions</Td>
+                  <Td>{new Date(project.createdAt).toDateString()}</Td>
                 </Tr>
               );
             })}

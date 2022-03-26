@@ -75,7 +75,7 @@ const OrganisationsPage = ({
                   >
                     <OrganisationGridBox
                       organisationName={organisation.name}
-                      numProjects={organisation.projects?.length ?? 0}
+                      numProjects={organisation.projectsCount}
                     />
                   </Button>
                 );
