@@ -7,6 +7,7 @@ const HomeLayout = ({ children }: { children: React.ReactNode }) => {
     <>
       <Sidebar />
       <Navbar />
+      {children}
     </>
   );
 };
