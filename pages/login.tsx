@@ -8,11 +8,9 @@ import {
   Container,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
   Image,
   Input,
-  StackDivider,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -41,6 +39,9 @@ const LoginPage: NextPage = () => {
         api.NEXT_LOGIN_URL,
         data
       ));
+      console.log({ loginResponse });
+      localStorage.setItem("token", loginResponse.token);
+      localStorage.setItem("refreshToken", loginResponse.refreshToken);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ?? `Something went wrong.`;
