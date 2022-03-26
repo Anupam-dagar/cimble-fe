@@ -15,10 +15,10 @@ const Navbar = () => {
     switch (route) {
       case "/":
         return "Dashboard";
-      case "projects":
+      case "/projects":
         return "Projects";
-      case "configurations":
-        return "Congigurations";
+      case "/configurations":
+        return "Configurations";
       default:
         return null;
     }
