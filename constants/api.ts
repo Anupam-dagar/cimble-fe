@@ -6,4 +6,5 @@ export default {
   LOGIN_URL: `${env.BACKEND_URL}/api/auth/login`,
   SIGNUP_URL: `${env.BACKEND_URL}/api/auth/signup`,
   ORGANISATIONS_ROUTE: `${env.BACKEND_URL}/api/organisation/`,
+  PROJECTS_ROUTE: `${env.BACKEND_URL}/api/project/`,
 };

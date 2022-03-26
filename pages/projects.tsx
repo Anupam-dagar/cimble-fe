@@ -9,10 +9,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { ReactElement } from "react";
+import api from "../constants/api";
 import HomeLayout from "../layouts/HomeLayout";
+import { ProjectModel } from "../models/project";
+import {
+  constructAuthHeader,
+  parseTokenFromCookie,
+  invalidateUserAuthentication,
+} from "../utils/auth";
 
-const Projects = () => {
+const Projects = ({ projects }: { projects: ProjectModel[] }) => {
+  const totalConfigurations = projects.reduce(
+    (total, curr) => total + curr.configurationsCount,
+    0
+  );
+
   return (
     <>
       <Flex
@@ -52,7 +65,10 @@ const Projects = () => {
         w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
       >
         <Table variant="unstyled" size={"lg"}>
-          <TableCaption>X Configurations in Y Projects</TableCaption>
+          <TableCaption>
+            Total {totalConfigurations} Configurations in {projects.length}{" "}
+            Projects
+          </TableCaption>
           <Thead>
             <Tr>
               <Th>S. No.</Th>
@@ -62,24 +78,16 @@ const Projects = () => {
             </Tr>
           </Thead>
           <Tbody>
-            <Tr>
-              <Td>1</Td>
-              <Td>Project 1</Td>
-              <Td isNumeric>0</Td>
-              <Td>Actions</Td>
-            </Tr>
-            <Tr>
-              <Td>2</Td>
-              <Td>Project 2</Td>
-              <Td isNumeric>2</Td>
-              <Td>Actions</Td>
-            </Tr>
-            <Tr>
-              <Td>3</Td>
-              <Td>Project 3</Td>
-              <Td isNumeric>10</Td>
-              <Td>Actions</Td>
-            </Tr>
+            {projects.map((project, index) => {
+              return (
+                <Tr>
+                  <Td>{index + 1}</Td>
+                  <Td>{project.name}</Td>
+                  <Td isNumeric>{project.configurationsCount}</Td>
+                  <Td>Actions</Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </Flex>
@@ -89,6 +97,31 @@ const Projects = () => {
 
 Projects.getLayout = function getLayout(page: ReactElement) {
   return <HomeLayout>{page}</HomeLayout>;
+};
+
+export const getServerSideProps = async (context: {
+  req: { headers: { cookie: string } };
+}) => {
+  const { token, refreshToken } = parseTokenFromCookie(context);
+
+  if (!token) {
+    return invalidateUserAuthentication();
+  }
+
+  const projects = (
+    await axios.get<ProjectModel[]>(
+      api.PROJECTS_ROUTE,
+      constructAuthHeader(token)
+    )
+  ).data;
+
+  return {
+    props: {
+      token,
+      refreshToken,
+      projects,
+    },
+  };
 };
 
 export default Projects;
