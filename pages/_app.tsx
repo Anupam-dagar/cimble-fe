@@ -6,6 +6,7 @@ import { OrganisationsContextProvider } from "../store/organisationsContext";
 import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 import { ProjectsContextProvider } from "../store/projectsContext";
+import { ConfigurationsContextProvider } from "../store/configurationsContext";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -22,7 +23,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     <ChakraProvider theme={theme}>
       <OrganisationsContextProvider>
         <ProjectsContextProvider>
-          {getLayout(<Component {...pageProps} />)}
+          <ConfigurationsContextProvider>
+            {getLayout(<Component {...pageProps} />)}
+          </ConfigurationsContextProvider>
         </ProjectsContextProvider>
       </OrganisationsContextProvider>
     </ChakraProvider>

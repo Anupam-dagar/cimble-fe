@@ -7,12 +7,15 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { ReactElement } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
+import CreateConfigurationModal from "../../components/Modal/CreateConfigurationModal";
 import api from "../../constants/api";
 import HomeLayout from "../../layouts/HomeLayout";
 import { ConfigurationsModel } from "../../models/configurations";
+import ConfigurationsContext from "../../store/configurationsContext";
 import {
   constructAuthHeader,
   invalidateUserAuthentication,
@@ -24,67 +27,102 @@ const ProjectConfigurations = ({
 }: {
   configurations: ConfigurationsModel[];
 }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [stateConfigurations, setStateConfigurations] =
+    useState(configurations);
+  const configurationsContext = useContext(ConfigurationsContext);
+
+  useEffect(() => {
+    configurationsContext.setConfigurations(configurations);
+  }, []);
+
+  useEffect(() => {
+    setStateConfigurations(configurationsContext.configurations);
+  }, [configurationsContext]);
+
   return (
-    <Flex
-      bg={"white"}
-      position={"absolute"}
-      boxShadow="md"
-      borderColor="transparent"
-      borderWidth="1.5px"
-      transitionDelay="0s, 0s, 0s, 0s"
-      transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
-      transition-property="box-shadow, background-color, filter, border"
-      transitionTimingFunction="linear, linear, linear, linear"
-      alignItems={{ xl: "center" }}
-      borderRadius="16px"
-      display="flex"
-      minH="65px"
-      justifyContent={{ xl: "left" }}
-      lineHeight="25.6px"
-      mx="auto"
-      pb="8px"
-      right={{
-        sm: "20px",
-        xl: "30px",
-      }}
-      px={{
-        sm: "15px",
-        md: "30px",
-      }}
-      ps={{
-        xl: "12px",
-      }}
-      pt={{
-        sm: "16px",
-        xl: "8px",
-      }}
-      top="120px"
-      w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
-    >
-      <Table variant="unstyled" size={"lg"}>
-        <TableCaption>Total X Configurations</TableCaption>
-        <Thead>
-          <Tr>
-            <Th>S. No.</Th>
-            <Th>Name</Th>
-            <Th isNumeric>Value</Th>
-            <Th>Last Updated</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {configurations.map((configuration, index) => {
-            return (
-              <Tr>
-                <Td>{index + 1}</Td>
-                <Td>{configuration.name}</Td>
-                <Td isNumeric>{configuration.info}</Td>
-                <Td>{new Date(configuration.updatedAt).toDateString()}</Td>
-              </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-    </Flex>
+    <>
+      <Flex
+        bg={"white"}
+        position={"absolute"}
+        boxShadow="md"
+        borderColor="transparent"
+        borderWidth="1.5px"
+        transitionDelay="0s, 0s, 0s, 0s"
+        transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
+        transition-property="box-shadow, background-color, filter, border"
+        transitionTimingFunction="linear, linear, linear, linear"
+        alignItems={{ xl: "center" }}
+        borderRadius="16px"
+        display="flex"
+        minH="65px"
+        justifyContent={{ xl: "left" }}
+        lineHeight="25.6px"
+        mx="auto"
+        pb="8px"
+        right={{
+          sm: "20px",
+          xl: "30px",
+        }}
+        px={{
+          sm: "15px",
+          md: "30px",
+        }}
+        ps={{
+          xl: "12px",
+        }}
+        pt={{
+          sm: "16px",
+          xl: "8px",
+        }}
+        top="120px"
+        w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
+      >
+        <Table variant="unstyled" size={"lg"}>
+          <TableCaption>
+            Total {stateConfigurations.length} Configurations
+          </TableCaption>
+          <Thead>
+            <Tr>
+              <Th>S. No.</Th>
+              <Th>Name</Th>
+              <Th isNumeric>Value</Th>
+              <Th>Last Updated</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {stateConfigurations.map((configuration, index) => {
+              return (
+                <Tr>
+                  <Td>{index + 1}</Td>
+                  <Td>{configuration.name}</Td>
+                  <Td isNumeric>{configuration.info}</Td>
+                  <Td>{new Date(configuration.updatedAt).toDateString()}</Td>
+                </Tr>
+              );
+            })}
+            <Tr>
+              <Td
+                bg={"teal.200"}
+                borderRadius={16}
+                colSpan={4}
+                _hover={{ bg: "teal.300", cursor: "pointer" }}
+                textAlign="center"
+                onClick={onOpen}
+              >
+                Create Configuration
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </Flex>
+      <CreateConfigurationModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+      />
+    </>
   );
 };
 

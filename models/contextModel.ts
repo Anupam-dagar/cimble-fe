@@ -1,3 +1,4 @@
+import { ConfigurationsModel } from "./configurations";
 import { OrganisationModel } from "./organisation";
 import { ProjectModel } from "./project";
 
@@ -11,4 +12,10 @@ export interface ProjectContextModel {
   projects: ProjectModel[];
   addProject(project: ProjectModel): void;
   setProjects(projects: ProjectModel[]): void;
+}
+
+export interface ConfigurationContextModel {
+  configurations: ConfigurationsModel[];
+  addConfiguration(configuration: ConfigurationsModel): void;
+  setConfigurations(configurations: ConfigurationsModel[]): void;
 }
