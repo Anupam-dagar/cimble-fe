@@ -30,12 +30,10 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
   const projectContext = useContext(ProjectsContext);
 
   useEffect(() => {
-    console.log("first useeffect", projects);
     projectContext.setProjects(projects);
   }, []);
 
   useEffect(() => {
-    console.log("second useeffect", projectContext.projects);
     setStateProjects(projectContext.projects);
   }, [projectContext]);
 
@@ -49,7 +47,6 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
     Router.push("/configurations");
   };
 
-  console.log({ stateProjects });
   return (
     <>
       <Flex
@@ -155,7 +152,6 @@ export const getServerSideProps = async (context: {
       constructAuthHeader(token)
     )
   ).data;
-  console.log("server", projects);
 
   return {
     props: {

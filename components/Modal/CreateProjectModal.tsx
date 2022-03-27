@@ -31,7 +31,6 @@ const CreateProjectModal = ({ isOpen, onOpen, onClose }: any) => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log("add project");
     projectsContext.addProject(result.data);
     onClose();
   };

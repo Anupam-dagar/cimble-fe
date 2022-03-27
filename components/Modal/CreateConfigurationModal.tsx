@@ -38,7 +38,6 @@ const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
         },
       }
     );
-    console.log("add project");
     configurationsContext.addConfiguration(result.data);
     onClose();
   };

@@ -16,7 +16,6 @@ export const ProjectsContextProvider = ({
   const [projects, setProjects] = useState<ProjectModel[]>([]);
 
   const addProject = (project: ProjectModel) => {
-    console.log("addProject", project);
     setProjects((previousProjects: ProjectModel[]) => [
       ...previousProjects,
       project,
