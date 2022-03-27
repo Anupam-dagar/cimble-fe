@@ -10,6 +10,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Router from "next/router";
 import { ReactElement } from "react";
 import api from "../constants/api";
 import HomeLayout from "../layouts/HomeLayout";
@@ -25,6 +26,11 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
     (total, curr) => total + curr.configurationsCount,
     0
   );
+
+  const selectProject = (projectId: string) => {
+    localStorage.setItem("projectId", projectId);
+    Router.push("/configurations");
+  };
 
   return (
     <>
@@ -80,7 +86,10 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
           <Tbody>
             {projects.map((project, index) => {
               return (
-                <Tr>
+                <Tr
+                  _hover={{ bg: "gray.100", cursor: "pointer" }}
+                  onClick={() => selectProject(project.id)}
+                >
                   <Td>{index + 1}</Td>
                   <Td>{project.name}</Td>
                   <Td isNumeric>{project.configurationsCount}</Td>

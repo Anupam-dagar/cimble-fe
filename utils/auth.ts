@@ -1,6 +1,7 @@
 import cookie from "cookie";
 
 export const parseTokenFromCookie = (context: {
+  query: any;
   req: { headers: { cookie: string } };
 }) => {
   let isAuthenticated = false;

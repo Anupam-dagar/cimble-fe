@@ -12,7 +12,13 @@ const SidebarButton = (props: { title: string; path: string }) => {
   const activeColor = useColorModeValue("gray.700", "white");
 
   const activeRoute = (routeName: string) => {
-    return router.pathname === routeName ? true : false;
+    console.log({
+      router: router.pathname.split("/")[1],
+      routeName: routeName.split("/")[1],
+    });
+    return router.pathname.split("/")[1] === routeName.split("/")[1]
+      ? true
+      : false;
   };
 
   const handleSidebarButtonClick = async (
@@ -28,7 +34,7 @@ const SidebarButton = (props: { title: string; path: string }) => {
         Router.replace("/login");
       }
       default: {
-        console.log("default");
+        // no action
       }
     }
   };

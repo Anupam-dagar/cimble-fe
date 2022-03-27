@@ -14,6 +14,13 @@ const routes = [
     separator: false,
   },
   {
+    path: "/configurations",
+    name: "Configurations",
+    icon: `<SunIcon color="inherit" />`,
+    layout: "/admin",
+    separator: false,
+  },
+  {
     path: "/logout",
     name: "Logout",
     icon: `<SunIcon color="inherit" />`,
