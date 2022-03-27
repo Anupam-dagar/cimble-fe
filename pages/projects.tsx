@@ -8,13 +8,16 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import Router from "next/router";
-import { ReactElement } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
+import CreateProjectModal from "../components/Modal/CreateProjectModal";
 import api from "../constants/api";
 import HomeLayout from "../layouts/HomeLayout";
 import { ProjectModel } from "../models/project";
+import ProjectsContext from "../store/projectsContext";
 import {
   constructAuthHeader,
   parseTokenFromCookie,
@@ -22,7 +25,21 @@ import {
 } from "../utils/auth";
 
 const Projects = ({ projects }: { projects: ProjectModel[] }) => {
-  const totalConfigurations = projects.reduce(
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [stateProjects, setStateProjects] = useState(projects);
+  const projectContext = useContext(ProjectsContext);
+
+  useEffect(() => {
+    console.log("first useeffect", projects);
+    projectContext.setProjects(projects);
+  }, []);
+
+  useEffect(() => {
+    console.log("second useeffect", projectContext.projects);
+    setStateProjects(projectContext.projects);
+  }, [projectContext]);
+
+  const totalConfigurations = stateProjects.reduce(
     (total, curr) => total + curr.configurationsCount,
     0
   );
@@ -32,6 +49,7 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
     Router.push("/configurations");
   };
 
+  console.log({ stateProjects });
   return (
     <>
       <Flex
@@ -84,7 +102,7 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {projects.map((project, index) => {
+            {stateProjects.map((project, index) => {
               return (
                 <Tr
                   _hover={{ bg: "gray.100", cursor: "pointer" }}
@@ -92,14 +110,27 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
                 >
                   <Td>{index + 1}</Td>
                   <Td>{project.name}</Td>
-                  <Td isNumeric>{project.configurationsCount}</Td>
+                  <Td isNumeric>{project.configurationsCount ?? 0}</Td>
                   <Td>{new Date(project.createdAt).toDateString()}</Td>
                 </Tr>
               );
             })}
+            <Tr>
+              <Td
+                bg={"teal.200"}
+                borderRadius={16}
+                colSpan={4}
+                _hover={{ bg: "teal.300", cursor: "pointer" }}
+                textAlign="center"
+                onClick={onOpen}
+              >
+                Create Project
+              </Td>
+            </Tr>
           </Tbody>
         </Table>
       </Flex>
+      <CreateProjectModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
     </>
   );
 };
@@ -124,6 +155,7 @@ export const getServerSideProps = async (context: {
       constructAuthHeader(token)
     )
   ).data;
+  console.log("server", projects);
 
   return {
     props: {
