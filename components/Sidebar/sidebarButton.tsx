@@ -12,10 +12,6 @@ const SidebarButton = (props: { title: string; path: string }) => {
   const activeColor = useColorModeValue("gray.700", "white");
 
   const activeRoute = (routeName: string) => {
-    console.log({
-      router: router.pathname.split("/")[1],
-      routeName: routeName.split("/")[1],
-    });
     return router.pathname.split("/")[1] === routeName.split("/")[1]
       ? true
       : false;

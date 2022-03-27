@@ -110,7 +110,6 @@ export const getServerSideProps = async (context: {
     )
   ).data;
 
-  console.log(configurations);
   return {
     props: {
       token,

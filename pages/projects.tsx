@@ -109,6 +109,7 @@ Projects.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps = async (context: {
+  query: any;
   req: { headers: { cookie: string } };
 }) => {
   const { token, refreshToken } = parseTokenFromCookie(context);

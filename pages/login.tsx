@@ -21,6 +21,11 @@ import Router from "next/router";
 import { useState } from "react";
 import api from "../constants/api";
 import { LoginResponse } from "../models/loginResponse";
+import {
+  invalidateUserAuthentication,
+  parseTokenFromCookie,
+  validateUserAuthentication,
+} from "../utils/auth";
 
 const LoginPage: NextPage = () => {
   const [errorMessage, setError] = useState<string | null>(null);
@@ -39,7 +44,6 @@ const LoginPage: NextPage = () => {
         api.NEXT_LOGIN_URL,
         data
       ));
-      console.log({ loginResponse });
       localStorage.setItem("token", loginResponse.token);
       localStorage.setItem("refreshToken", loginResponse.refreshToken);
     } catch (error: any) {
@@ -129,6 +133,21 @@ const LoginPage: NextPage = () => {
       </Box>
     </Center>
   );
+};
+
+export const getServerSideProps = async (context: {
+  query: any;
+  req: { headers: { cookie: string } };
+}) => {
+  const { token, refreshToken } = parseTokenFromCookie(context);
+
+  if (token) {
+    return validateUserAuthentication();
+  }
+
+  return {
+    props: {},
+  };
 };
 
 export default LoginPage;

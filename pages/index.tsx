@@ -1,6 +1,10 @@
 import HomeLayout from "../layouts/HomeLayout";
 import { ReactElement } from "react";
 import { Flex } from "@chakra-ui/react";
+import {
+  invalidateUserAuthentication,
+  parseTokenFromCookie,
+} from "../utils/auth";
 
 const Home = () => {
   return (
@@ -47,6 +51,21 @@ const Home = () => {
 
 Home.getLayout = function getLayout(page: ReactElement) {
   return <HomeLayout>{page}</HomeLayout>;
+};
+
+export const getServerSideProps = async (context: {
+  query: any;
+  req: { headers: { cookie: string } };
+}) => {
+  const { token, refreshToken } = parseTokenFromCookie(context);
+
+  if (!token) {
+    return invalidateUserAuthentication();
+  }
+
+  return {
+    props: {},
+  };
 };
 
 export default Home;

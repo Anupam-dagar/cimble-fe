@@ -18,6 +18,10 @@ import Separator from "../components/Separator/separator";
 import api from "../constants/api";
 import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
+import {
+  invalidateUserAuthentication,
+  parseTokenFromCookie,
+} from "../utils/auth";
 
 const OrganisationsPage = ({
   organisations,
@@ -104,23 +108,13 @@ const OrganisationsPage = ({
 };
 
 export const getServerSideProps = async (context: {
+  query: any;
   req: { headers: { cookie: string } };
 }) => {
-  let isAuthenticated = false;
-  let token = null;
-  let refreshToken = null;
-  if (context.req.headers.cookie) {
-    ({ token, refreshToken } = cookie.parse(context.req.headers.cookie));
-    isAuthenticated = !!token;
-  }
+  const { token, refreshToken } = parseTokenFromCookie(context);
 
-  if (!isAuthenticated) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
+  if (!token) {
+    return invalidateUserAuthentication();
   }
 
   const organisations = (

@@ -27,6 +27,15 @@ export const invalidateUserAuthentication = () => {
   };
 };
 
+export const validateUserAuthentication = () => {
+  return {
+    redirect: {
+      destination: "/",
+      permanent: false,
+    },
+  };
+};
+
 export const constructAuthHeader = (token: string) => {
   return {
     headers: {
