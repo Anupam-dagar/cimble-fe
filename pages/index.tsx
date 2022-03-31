@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 import { Flex } from "@chakra-ui/react";
 import {
   invalidateUserAuthentication,
-  parseTokenFromCookie,
+  parseDataFromCookie,
 } from "../utils/auth";
 
 const Home = () => {
@@ -50,21 +50,23 @@ const Home = () => {
 };
 
 Home.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout>{page}</HomeLayout>;
+  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
 export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken, projectId } = parseDataFromCookie(context);
 
   if (!token) {
     return invalidateUserAuthentication();
   }
 
   return {
-    props: {},
+    props: {
+      projectId: projectId ?? null,
+    },
   };
 };
 

@@ -6,7 +6,11 @@ import Link from "next/link";
 import axios from "axios";
 import api from "../../constants/api";
 
-const SidebarButton = (props: { title: string; path: string }) => {
+const SidebarButton = (props: {
+  title: string;
+  path: string;
+  projectId: string;
+}) => {
   const router = useRouter();
   const activeBg = useColorModeValue("gray.200", "gray.700");
   const activeColor = useColorModeValue("gray.700", "white");
@@ -17,6 +21,14 @@ const SidebarButton = (props: { title: string; path: string }) => {
       : false;
   };
 
+  const parseRoutePath = (path: string) => {
+    if (path.split("/")[1] === "configurations" && props.projectId) {
+      return `${path}/${props.projectId}`;
+    }
+
+    return path;
+  };
+
   const handleSidebarButtonClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
     path: string
@@ -25,8 +37,6 @@ const SidebarButton = (props: { title: string; path: string }) => {
       case "/logout": {
         e.preventDefault();
         await axios.post(api.NEXT_LOGOUT_URL);
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
         Router.replace("/login");
       }
       default: {
@@ -36,7 +46,7 @@ const SidebarButton = (props: { title: string; path: string }) => {
   };
 
   return (
-    <Link href={props.path}>
+    <Link href={parseRoutePath(props.path)}>
       <Button
         boxSize="initial"
         justifyContent="flex-start"

@@ -11,6 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
@@ -20,7 +21,7 @@ import { ProjectModel } from "../models/project";
 import ProjectsContext from "../store/projectsContext";
 import {
   constructAuthHeader,
-  parseTokenFromCookie,
+  parseDataFromCookie,
   invalidateUserAuthentication,
 } from "../utils/auth";
 
@@ -43,8 +44,8 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
   );
 
   const selectProject = (projectId: string) => {
-    localStorage.setItem("projectId", projectId);
-    Router.push("/configurations");
+    Cookies.set("projectId", projectId);
+    Router.push(`/configurations/${projectId}`);
   };
 
   return (
@@ -133,14 +134,15 @@ const Projects = ({ projects }: { projects: ProjectModel[] }) => {
 };
 
 Projects.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout>{page}</HomeLayout>;
+  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
 export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken, organisation, projectId } =
+    parseDataFromCookie(context);
 
   if (!token) {
     return invalidateUserAuthentication();
@@ -148,7 +150,7 @@ export const getServerSideProps = async (context: {
 
   const projects = (
     await axios.get<ProjectModel[]>(
-      api.PROJECTS_ROUTE,
+      `${api.PROJECTS_ROUTE}${organisation}`,
       constructAuthHeader(token)
     )
   ).data;
@@ -158,6 +160,7 @@ export const getServerSideProps = async (context: {
       token,
       refreshToken,
       projects,
+      projectId: projectId ?? null,
     },
   };
 };

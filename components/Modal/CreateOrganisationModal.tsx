@@ -11,6 +11,7 @@ import {
   ModalHeader,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { OrganisationModel } from "../../models/organisation";
@@ -30,7 +31,7 @@ const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
       data,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       }
     );

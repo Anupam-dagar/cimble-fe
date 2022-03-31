@@ -3,7 +3,7 @@ import Separator from "../Separator/separator";
 import SidebarButton from "./sidebarButton";
 import routes from "../../routes";
 
-const SidebarContent = () => {
+const SidebarContent = ({ projectId }: { projectId: string }) => {
   return (
     <>
       <Box pt={"25px"} mb="12px">
@@ -35,12 +35,18 @@ const SidebarContent = () => {
                     key={index}
                     title={route.name}
                     path={route.path}
+                    projectId={projectId}
                   />
                 </>
               );
             }
             return (
-              <SidebarButton key={index} title={route.name} path={route.path} />
+              <SidebarButton
+                key={index}
+                title={route.name}
+                path={route.path}
+                projectId={projectId}
+              />
             );
           })}
         </Box>

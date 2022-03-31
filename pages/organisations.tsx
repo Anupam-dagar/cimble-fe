@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import cookie from "cookie";
+import Cookies from "js-cookie";
 import Router from "next/router";
 import { useContext, useEffect, useState } from "react";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
@@ -20,7 +21,7 @@ import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
 import {
   invalidateUserAuthentication,
-  parseTokenFromCookie,
+  parseDataFromCookie,
 } from "../utils/auth";
 
 const OrganisationsPage = ({
@@ -41,7 +42,7 @@ const OrganisationsPage = ({
   }, [organisationContext]);
 
   const selectOrganisation = (id: string) => {
-    localStorage.setItem("organisation", id);
+    Cookies.set("organisation", id);
     Router.push("/");
   };
 
@@ -111,7 +112,7 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(context);
 
   if (!token) {
     return invalidateUserAuthentication();

@@ -32,6 +32,20 @@ export default async (
       sameSite: "strict",
       path: "/",
     }),
+    cookie.serialize("organisation", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("projectId", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
   ]);
 
   res.status(200).json({ message: "Logout Successfully" });

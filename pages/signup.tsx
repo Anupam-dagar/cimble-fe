@@ -20,10 +20,7 @@ import Link from "next/link";
 import Router from "next/router";
 import React, { useState } from "react";
 import api from "../constants/api";
-import {
-  parseTokenFromCookie,
-  validateUserAuthentication,
-} from "../utils/auth";
+import { parseDataFromCookie, validateUserAuthentication } from "../utils/auth";
 
 const SignupPage: NextPage = () => {
   const [firstName, setFirstName] = useState<string | null>(null);
@@ -185,7 +182,7 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(context);
 
   if (token) {
     return validateUserAuthentication();

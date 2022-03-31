@@ -23,7 +23,7 @@ import api from "../constants/api";
 import { LoginResponse } from "../models/loginResponse";
 import {
   invalidateUserAuthentication,
-  parseTokenFromCookie,
+  parseDataFromCookie,
   validateUserAuthentication,
 } from "../utils/auth";
 
@@ -44,8 +44,6 @@ const LoginPage: NextPage = () => {
         api.NEXT_LOGIN_URL,
         data
       ));
-      localStorage.setItem("token", loginResponse.token);
-      localStorage.setItem("refreshToken", loginResponse.refreshToken);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message ?? `Something went wrong.`;
@@ -55,7 +53,7 @@ const LoginPage: NextPage = () => {
       return;
     }
 
-    Router.replace("/");
+    Router.replace("/organisations");
   };
 
   const performFieldValidation = (includeNull: boolean) => {
@@ -139,7 +137,7 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(context);
 
   if (token) {
     return validateUserAuthentication();

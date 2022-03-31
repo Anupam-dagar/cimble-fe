@@ -19,7 +19,7 @@ import ConfigurationsContext from "../../store/configurationsContext";
 import {
   constructAuthHeader,
   invalidateUserAuthentication,
-  parseTokenFromCookie,
+  parseDataFromCookie,
 } from "../../utils/auth";
 
 const ProjectConfigurations = ({
@@ -127,23 +127,23 @@ const ProjectConfigurations = ({
 };
 
 ProjectConfigurations.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout>{page}</HomeLayout>;
+  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
 export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseTokenFromCookie(context);
+  const { token, refreshToken, projectId } = parseDataFromCookie(context);
 
   if (!token) {
     return invalidateUserAuthentication();
   }
 
-  const { id: projectId }: { id: string } = context.query;
+  const { id: selectedProjectId }: { id: string } = context.query;
   const configurations = (
     await axios.get<ConfigurationsModel[]>(
-      `${api.CONFIGURATIONS_ROUTE}${projectId}`,
+      `${api.CONFIGURATIONS_ROUTE}${selectedProjectId}`,
       constructAuthHeader(token)
     )
   ).data;
@@ -153,6 +153,7 @@ export const getServerSideProps = async (context: {
       token,
       refreshToken,
       configurations,
+      projectId: projectId ?? null,
     },
   };
 };

@@ -11,6 +11,7 @@ import {
   ModalHeader,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { ConfigurationsModel } from "../../models/configurations";
@@ -30,11 +31,11 @@ const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
       info,
     };
     const result = await axios.post<ConfigurationsModel>(
-      `${api.CONFIGURATIONS_ROUTE}${localStorage.getItem("projectId")}`,
+      `${api.CONFIGURATIONS_ROUTE}${Cookies.get("projectId")}`,
       data,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       }
     );

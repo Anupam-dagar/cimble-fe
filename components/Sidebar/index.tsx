@@ -1,7 +1,8 @@
 import { Box } from "@chakra-ui/react";
+import { parseDataFromCookie } from "../../utils/auth";
 import SidebarContent from "./sidebarContent";
 
-const Sidebar = () => {
+const Sidebar = ({ projectId }: { projectId: string }) => {
   let sidebarRadius = "16px";
   let sidebarMargins = "16px 0px 16px 16px";
 
@@ -26,7 +27,7 @@ const Sidebar = () => {
           borderRadius={sidebarRadius}
           boxShadow="md"
         >
-          <SidebarContent />
+          <SidebarContent projectId={projectId} />
         </Box>
       </Box>
     </Box>

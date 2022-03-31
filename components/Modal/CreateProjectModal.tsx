@@ -11,6 +11,7 @@ import {
   ModalHeader,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { ProjectModel } from "../../models/project";
@@ -24,11 +25,11 @@ const CreateProjectModal = ({ isOpen, onOpen, onClose }: any) => {
   const createProject = async (event: any) => {
     const data = {
       name,
-      organisationId: localStorage.getItem("organisation"),
+      organisationId: Cookies.get("organisation"),
     };
     const result = await axios.post<ProjectModel>(api.PROJECTS_ROUTE, data, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     projectsContext.addProject(result.data);
