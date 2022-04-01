@@ -53,7 +53,9 @@ const LoginPage: NextPage = () => {
       return;
     }
 
-    Router.replace("/organisations");
+    localStorage.setItem("token", loginResponse.token);
+    localStorage.setItem("refreshToken", loginResponse.refreshToken);
+    Router.replace("/");
   };
 
   const performFieldValidation = (includeNull: boolean) => {

@@ -1,30 +1,30 @@
 import {
-  Box,
-  Button,
-  Center,
-  Heading,
-  SimpleGrid,
+  Flex,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import cookie from "cookie";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
-import OrganisationGridBox from "../components/OrganisationGrid/OrganisationGridBox";
-import OrganisationGridCreateBox from "../components/OrganisationGrid/OrganisationGridCreateBox";
-import BlurOverlay from "../components/Overlays/BlurOverlay";
-import Separator from "../components/Separator/separator";
 import api from "../constants/api";
+import HomeLayout from "../layouts/HomeLayout";
 import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
 import {
+  constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
 } from "../utils/auth";
 
-const OrganisationsPage = ({
+const Organisations = ({
   organisations,
 }: {
   organisations: OrganisationModel[];
@@ -43,62 +43,89 @@ const OrganisationsPage = ({
 
   const selectOrganisation = (id: string) => {
     Cookies.set("organisation", id);
-    Router.push("/");
+    Cookies.remove("projectId");
+    Router.push("/projects");
   };
 
   return (
     <>
-      <Center
-        bgGradient="linear(to-tr, #7AE7C7, #FFD3BA)"
-        w="100%"
-        maxWidth="100%"
-        h="100vh"
+      <Flex
+        bg={"white"}
+        position={"absolute"}
+        boxShadow="md"
+        borderColor="transparent"
+        borderWidth="1.5px"
+        transitionDelay="0s, 0s, 0s, 0s"
+        transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
+        transition-property="box-shadow, background-color, filter, border"
+        transitionTimingFunction="linear, linear, linear, linear"
+        alignItems={{ xl: "center" }}
+        borderRadius="16px"
+        display="flex"
+        minH="65px"
+        justifyContent={{ xl: "left" }}
+        lineHeight="25.6px"
+        mx="auto"
+        pb="8px"
+        right={{
+          sm: "20px",
+          xl: "30px",
+        }}
+        px={{
+          sm: "15px",
+          md: "30px",
+        }}
+        ps={{
+          xl: "12px",
+        }}
+        pt={{
+          sm: "16px",
+          xl: "8px",
+        }}
+        top="120px"
+        w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
       >
-        <Box boxShadow="dark-lg" bg="gray.50" w="6xl" h="3xl" m={4}>
-          <Center m={4}>
-            <Heading as="h3" size="lg">
-              Your Organisations
-            </Heading>
-          </Center>
-          <Separator />
-          <Box maxH="90%" overflow={"scroll"}>
-            <SimpleGrid
-              m={8}
-              minChildWidth={180}
-              spacing={12}
-              overflow={"scroll"}
-            >
-              {stateOrganisations.map((organisation) => {
-                return (
-                  <Button
-                    boxShadow="outline"
-                    m={2}
-                    bg="gray.50"
-                    height={180}
-                    _hover={{ bg: "gray.100" }}
-                    onClick={() => selectOrganisation(organisation.id)}
-                  >
-                    <OrganisationGridBox
-                      organisationName={organisation.name}
-                      numProjects={organisation.projectsCount}
-                    />
-                  </Button>
-                );
-              })}
-              <Button
-                boxShadow="outline"
-                m={2}
-                bg="gray.50"
-                height={180}
-                _hover={{ bg: "gray.100" }}
+        <Table variant="unstyled" size={"lg"}>
+          <TableCaption>
+            Total {stateOrganisations.length} Organisations
+          </TableCaption>
+          <Thead>
+            <Tr>
+              <Th>S. No.</Th>
+              <Th>Name</Th>
+              <Th isNumeric>Projects</Th>
+              <Th>Date of Creation</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {stateOrganisations.map((organisation, index) => {
+              return (
+                <Tr
+                  _hover={{ bg: "gray.100", cursor: "pointer" }}
+                  onClick={() => selectOrganisation(organisation.id)}
+                >
+                  <Td>{index + 1}</Td>
+                  <Td>{organisation.name}</Td>
+                  <Td isNumeric>{organisation.projectsCount ?? 0}</Td>
+                  <Td>{new Date(organisation.createdAt).toDateString()}</Td>
+                </Tr>
+              );
+            })}
+            <Tr>
+              <Td
+                bg={"teal.200"}
+                borderRadius={16}
+                colSpan={4}
+                _hover={{ bg: "teal.300", cursor: "pointer" }}
+                textAlign="center"
                 onClick={onOpen}
               >
-                <OrganisationGridCreateBox />
-              </Button>
-            </SimpleGrid>
-          </Box>
-        </Box>
-      </Center>
+                Create Organisation
+              </Td>
+            </Tr>
+          </Tbody>
+        </Table>
+      </Flex>
       <CreateOrganisationModal
         isOpen={isOpen}
         onOpen={onOpen}
@@ -106,6 +133,10 @@ const OrganisationsPage = ({
       />
     </>
   );
+};
+
+Organisations.getLayout = function getLayout(page: ReactElement) {
+  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
 export const getServerSideProps = async (context: {
@@ -135,4 +166,4 @@ export const getServerSideProps = async (context: {
   };
 };
 
-export default OrganisationsPage;
+export default Organisations;

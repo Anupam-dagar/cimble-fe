@@ -4,4 +4,5 @@ export interface OrganisationModel {
   id: string;
   name: string;
   projectsCount: number;
+  createdAt: string;
 }

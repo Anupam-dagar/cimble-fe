@@ -31,7 +31,7 @@ const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
       data,
       {
         headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );

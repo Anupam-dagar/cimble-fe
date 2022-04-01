@@ -7,6 +7,13 @@ const routes = [
     separator: false,
   },
   {
+    path: "/organisations",
+    name: "Organisations",
+    icon: `<SunIcon color="inherit" />`,
+    layout: "/admin",
+    separator: false,
+  },
+  {
     path: "/projects",
     name: "Projects",
     icon: `<SunIcon color="inherit" />`,

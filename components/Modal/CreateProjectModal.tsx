@@ -29,7 +29,7 @@ const CreateProjectModal = ({ isOpen, onOpen, onClose }: any) => {
     };
     const result = await axios.post<ProjectModel>(api.PROJECTS_ROUTE, data, {
       headers: {
-        Authorization: `Bearer ${Cookies.get("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
     projectsContext.addProject(result.data);
