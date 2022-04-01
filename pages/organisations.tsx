@@ -134,7 +134,6 @@ const Organisations = ({
                   <Td>
                     <ActionColumn
                       id={organisation.id}
-                      onEdit={editOrganisation}
                       onDelete={deleteOrganisation}
                       type={TableType.ORGANISATIONS}
                     />

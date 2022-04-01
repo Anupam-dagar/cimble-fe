@@ -12,6 +12,7 @@ export interface ProjectContextModel {
   projects: ProjectModel[];
   addProject(project: ProjectModel): void;
   setProjects(projects: ProjectModel[]): void;
+  editProject(project: ProjectModel): void;
 }
 
 export interface ConfigurationContextModel {

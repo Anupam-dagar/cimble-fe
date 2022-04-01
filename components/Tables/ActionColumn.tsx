@@ -9,21 +9,20 @@ import React from "react";
 import { TableType } from "../../constants/enum";
 import ConfirmationDialog from "../AlertComponent/ConfirmationDialog";
 import EditConfigurationModal from "../Modal/EditConfigurationModal";
+import EditProjectModal from "../Modal/EditProjectModal";
 
 const ActionColumn = ({
   id,
-  onEdit,
   onDelete,
   type,
   name,
   info,
 }: {
   id: string;
-  onEdit: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   type: TableType;
   name: string;
-  info: string;
+  info?: string;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -56,6 +55,17 @@ const ActionColumn = ({
           />
         );
       }
+      case TableType.PROJECTS: {
+        return (
+          <EditProjectModal
+            isOpen={isEditOpen}
+            onOpen={onEditOpen}
+            onClose={onEditClose}
+            projectName={name}
+            id={id}
+          />
+        );
+      }
     }
   };
 
@@ -84,6 +94,13 @@ const ActionColumn = ({
           />
         </Tooltip>
       </ButtonGroup>
+      <ConfirmationDialog
+        onActionClick={onDelete}
+        isOpen={isOpen}
+        onClose={onClose}
+        id={id}
+        type={type}
+      />
       {editModal}
     </>
   );

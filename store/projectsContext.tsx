@@ -6,6 +6,7 @@ const ProjectsContext = createContext<ProjectContextModel>({
   projects: [] as ProjectModel[],
   addProject: (project: ProjectModel) => {},
   setProjects: (projects: ProjectModel[]) => {},
+  editProject: (project: ProjectModel) => {},
 });
 
 export const ProjectsContextProvider = ({
@@ -22,10 +23,22 @@ export const ProjectsContextProvider = ({
     ]);
   };
 
+  const editProject = (project: ProjectModel) => {
+    const contextProjects = [...projects];
+    const projectIndex = contextProjects.findIndex(
+      (contextProject) => contextProject.id === project.id
+    );
+    if (projectIndex !== -1) {
+      contextProjects[projectIndex] = project;
+      setProjects(contextProjects);
+    }
+  };
+
   const context = {
     projects,
     addProject,
     setProjects,
+    editProject,
   };
   return (
     <ProjectsContext.Provider value={context}>

@@ -60,11 +60,6 @@ const ProjectConfigurations = ({
     setStateConfigurations(configurations);
   };
 
-  const editConfiguration = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: string
-  ) => {};
-
   return (
     <>
       <Flex
@@ -127,7 +122,6 @@ const ProjectConfigurations = ({
                   <Td>
                     <ActionColumn
                       id={configuration.id}
-                      onEdit={editConfiguration}
                       onDelete={deleteConfiguration}
                       type={TableType.CONFIGURATIONS}
                       name={configuration.name}

@@ -118,9 +118,9 @@ const Projects = ({
                   <Td>
                     <ActionColumn
                       id={project.id}
-                      onEdit={editProject}
                       onDelete={deleteProject}
                       type={TableType.PROJECTS}
+                      name={project.name}
                     />
                   </Td>
                 </Tr>
