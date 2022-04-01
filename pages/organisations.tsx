@@ -136,6 +136,7 @@ const Organisations = ({
                       id={organisation.id}
                       onDelete={deleteOrganisation}
                       type={TableType.ORGANISATIONS}
+                      name={organisation.name}
                     />
                   </Td>
                 </Tr>

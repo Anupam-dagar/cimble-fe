@@ -9,6 +9,7 @@ import React from "react";
 import { TableType } from "../../constants/enum";
 import ConfirmationDialog from "../AlertComponent/ConfirmationDialog";
 import EditConfigurationModal from "../Modal/EditConfigurationModal";
+import EditOrganisationModal from "../Modal/EditOrganisationModal";
 import EditProjectModal from "../Modal/EditProjectModal";
 
 const ActionColumn = ({
@@ -62,6 +63,17 @@ const ActionColumn = ({
             onOpen={onEditOpen}
             onClose={onEditClose}
             projectName={name}
+            id={id}
+          />
+        );
+      }
+      case TableType.ORGANISATIONS: {
+        return (
+          <EditOrganisationModal
+            isOpen={isEditOpen}
+            onOpen={onEditOpen}
+            onClose={onEditClose}
+            organisationName={name}
             id={id}
           />
         );

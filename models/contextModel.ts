@@ -6,6 +6,7 @@ export interface OrganisationContextModel {
   organisations: OrganisationModel[];
   addOrganisation(organisation: OrganisationModel): void;
   setOrganisations(organisations: OrganisationModel[]): void;
+  editOrganisation(organisation: OrganisationModel): void;
 }
 
 export interface ProjectContextModel {
