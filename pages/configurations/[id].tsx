@@ -130,6 +130,8 @@ const ProjectConfigurations = ({
                       onEdit={editConfiguration}
                       onDelete={deleteConfiguration}
                       type={TableType.CONFIGURATIONS}
+                      name={configuration.name}
+                      info={configuration.info}
                     />
                   </Td>
                 </Tr>

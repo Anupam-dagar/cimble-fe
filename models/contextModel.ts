@@ -18,4 +18,5 @@ export interface ConfigurationContextModel {
   configurations: ConfigurationsModel[];
   addConfiguration(configuration: ConfigurationsModel): void;
   setConfigurations(configurations: ConfigurationsModel[]): void;
+  editConfiguration(configuration: ConfigurationsModel): void;
 }

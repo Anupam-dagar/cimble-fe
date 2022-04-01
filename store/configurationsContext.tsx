@@ -6,6 +6,7 @@ const ConfigurationsContext = createContext<ConfigurationContextModel>({
   configurations: [] as ConfigurationsModel[],
   addConfiguration: (configuration: ConfigurationsModel) => {},
   setConfigurations: (configurations: ConfigurationsModel[]) => {},
+  editConfiguration: (configuration: ConfigurationsModel) => {},
 });
 
 export const ConfigurationsContextProvider = ({
@@ -24,10 +25,22 @@ export const ConfigurationsContextProvider = ({
     ]);
   };
 
+  const editConfiguration = (configuration: ConfigurationsModel) => {
+    const configs = [...configurations];
+    const configIndex = configs.findIndex(
+      (config) => config.id === configuration.id
+    );
+    if (configIndex !== -1) {
+      configs[configIndex] = configuration;
+      setConfigurations(configs);
+    }
+  };
+
   const context = {
     configurations,
     addConfiguration,
     setConfigurations,
+    editConfiguration,
   };
   return (
     <ConfigurationsContext.Provider value={context}>

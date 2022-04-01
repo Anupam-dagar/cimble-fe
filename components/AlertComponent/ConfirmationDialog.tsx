@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { TableType } from "../../constants/enum";
+import BlurOverlay from "../Overlays/BlurOverlay";
 
 const ConfirmationDialog = ({
   isOpen,
@@ -36,7 +37,7 @@ const ConfirmationDialog = ({
       leastDestructiveRef={cancelRef}
       onClose={onClose}
     >
-      <AlertDialogOverlay>
+      <BlurOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             Delete {type.substring(0, type.length - 1)}
@@ -55,7 +56,7 @@ const ConfirmationDialog = ({
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialogOverlay>
+      </BlurOverlay>
     </AlertDialog>
   );
 };

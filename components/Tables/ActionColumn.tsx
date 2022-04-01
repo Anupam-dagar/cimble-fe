@@ -8,24 +8,58 @@ import {
 import React from "react";
 import { TableType } from "../../constants/enum";
 import ConfirmationDialog from "../AlertComponent/ConfirmationDialog";
+import EditConfigurationModal from "../Modal/EditConfigurationModal";
 
 const ActionColumn = ({
   id,
   onEdit,
   onDelete,
   type,
+  name,
+  info,
 }: {
   id: string;
   onEdit: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   type: TableType;
+  name: string;
+  info: string;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
+  } = useDisclosure();
 
   const onDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onOpen();
   };
+
+  const onEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onEditOpen();
+  };
+
+  const getEditModal = (type: TableType) => {
+    switch (type) {
+      case TableType.CONFIGURATIONS: {
+        return (
+          <EditConfigurationModal
+            isOpen={isEditOpen}
+            onOpen={onEditOpen}
+            onClose={onEditClose}
+            configName={name}
+            configInfo={info}
+            id={id}
+          />
+        );
+      }
+    }
+  };
+
+  const editModal = getEditModal(type);
 
   return (
     <>
@@ -36,7 +70,7 @@ const ActionColumn = ({
             colorScheme={"teal"}
             aria-label="Edit Organisation"
             icon={<EditIcon />}
-            onClick={(e) => onEdit(e, id)}
+            onClick={onEditClick}
           />
         </Tooltip>
 
@@ -50,13 +84,7 @@ const ActionColumn = ({
           />
         </Tooltip>
       </ButtonGroup>
-      <ConfirmationDialog
-        onActionClick={onDelete}
-        isOpen={isOpen}
-        onClose={onClose}
-        id={id}
-        type={type}
-      />
+      {editModal}
     </>
   );
 };
