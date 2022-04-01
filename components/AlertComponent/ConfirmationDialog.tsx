@@ -8,17 +8,20 @@ import {
   Button,
 } from "@chakra-ui/react";
 import React from "react";
+import { TableType } from "../../constants/enum";
 
 const ConfirmationDialog = ({
   isOpen,
   onClose,
   onActionClick,
   id,
+  type,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onActionClick: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   id: string;
+  type: TableType;
 }) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
 
@@ -36,7 +39,7 @@ const ConfirmationDialog = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Delete Customer
+            Delete {type.substring(0, type.length - 1)}
           </AlertDialogHeader>
 
           <AlertDialogBody>

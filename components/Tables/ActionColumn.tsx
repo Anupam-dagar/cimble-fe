@@ -6,16 +6,19 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
+import { TableType } from "../../constants/enum";
 import ConfirmationDialog from "../AlertComponent/ConfirmationDialog";
 
 const ActionColumn = ({
   id,
   onEdit,
   onDelete,
+  type,
 }: {
   id: string;
   onEdit: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  type: TableType;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -52,6 +55,7 @@ const ActionColumn = ({
         isOpen={isOpen}
         onClose={onClose}
         id={id}
+        type={type}
       />
     </>
   );

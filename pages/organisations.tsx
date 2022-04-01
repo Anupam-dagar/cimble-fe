@@ -16,6 +16,7 @@ import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
 import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
+import { TableType } from "../constants/enum";
 import HomeLayout from "../layouts/HomeLayout";
 import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
@@ -135,6 +136,7 @@ const Organisations = ({
                       id={organisation.id}
                       onEdit={editOrganisation}
                       onDelete={deleteOrganisation}
+                      type={TableType.ORGANISATIONS}
                     />
                   </Td>
                 </Tr>
@@ -144,7 +146,7 @@ const Organisations = ({
               <Td
                 bg={"teal.200"}
                 borderRadius={16}
-                colSpan={4}
+                colSpan={5}
                 _hover={{ bg: "teal.300", cursor: "pointer" }}
                 textAlign="center"
                 onClick={onOpen}

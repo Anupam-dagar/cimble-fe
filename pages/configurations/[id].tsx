@@ -10,9 +10,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateConfigurationModal from "../../components/Modal/CreateConfigurationModal";
+import ActionColumn from "../../components/Tables/ActionColumn";
 import api from "../../constants/api";
+import { TableType } from "../../constants/enum";
 import HomeLayout from "../../layouts/HomeLayout";
 import { ConfigurationsModel } from "../../models/configurations";
 import ConfigurationsContext from "../../store/configurationsContext";
@@ -40,6 +43,27 @@ const ProjectConfigurations = ({
   useEffect(() => {
     setStateConfigurations(configurationsContext.configurations);
   }, [configurationsContext]);
+
+  const deleteConfiguration = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    e.stopPropagation();
+    const projectId = Cookies.get("projectId");
+    await axios.delete(
+      `${api.CONFIGURATIONS_ROUTE}${projectId}/${id}`,
+      constructAuthHeader(localStorage.getItem("token") ?? "")
+    );
+    const configurations = stateConfigurations.filter((configuration) => {
+      return configuration.id !== id;
+    });
+    setStateConfigurations(configurations);
+  };
+
+  const editConfiguration = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {};
 
   return (
     <>
@@ -89,6 +113,7 @@ const ProjectConfigurations = ({
               <Th>Name</Th>
               <Th isNumeric>Value</Th>
               <Th>Last Updated</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -99,6 +124,14 @@ const ProjectConfigurations = ({
                   <Td>{configuration.name}</Td>
                   <Td isNumeric>{configuration.info}</Td>
                   <Td>{new Date(configuration.updatedAt).toDateString()}</Td>
+                  <Td>
+                    <ActionColumn
+                      id={configuration.id}
+                      onEdit={editConfiguration}
+                      onDelete={deleteConfiguration}
+                      type={TableType.CONFIGURATIONS}
+                    />
+                  </Td>
                 </Tr>
               );
             })}
@@ -106,7 +139,7 @@ const ProjectConfigurations = ({
               <Td
                 bg={"teal.200"}
                 borderRadius={16}
-                colSpan={4}
+                colSpan={5}
                 _hover={{ bg: "teal.300", cursor: "pointer" }}
                 textAlign="center"
                 onClick={onOpen}

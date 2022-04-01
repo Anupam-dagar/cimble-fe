@@ -18,6 +18,7 @@ import HomeFlexCard from "../components/Cards/HomeFlexCard";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
 import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
+import { TableType } from "../constants/enum";
 import HomeLayout from "../layouts/HomeLayout";
 import { ProjectModel } from "../models/project";
 import ProjectsContext from "../store/projectsContext";
@@ -119,6 +120,7 @@ const Projects = ({
                       id={project.id}
                       onEdit={editProject}
                       onDelete={deleteProject}
+                      type={TableType.PROJECTS}
                     />
                   </Td>
                 </Tr>
@@ -128,7 +130,7 @@ const Projects = ({
               <Td
                 bg={"teal.200"}
                 borderRadius={16}
-                colSpan={4}
+                colSpan={5}
                 _hover={{ bg: "teal.300", cursor: "pointer" }}
                 textAlign="center"
                 onClick={onOpen}
