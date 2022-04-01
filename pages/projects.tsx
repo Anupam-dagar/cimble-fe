@@ -16,6 +16,7 @@ import { ReactElement, useContext, useEffect, useState } from "react";
 import AlertComponent from "../components/AlertComponent";
 import HomeFlexCard from "../components/Cards/HomeFlexCard";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
+import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
 import HomeLayout from "../layouts/HomeLayout";
 import { ProjectModel } from "../models/project";
@@ -65,6 +66,26 @@ const Projects = ({
     Router.push(`/configurations/${projectId}`);
   };
 
+  const deleteProject = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    e.stopPropagation();
+    await axios.delete(
+      `${api.PROJECTS_ROUTE}${id}`,
+      constructAuthHeader(localStorage.getItem("token") ?? "")
+    );
+    const projects = stateProjects.filter((project) => {
+      return project.id !== id;
+    });
+    setStateProjects(projects);
+  };
+
+  const editProject = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {};
+
   return (
     <>
       <HomeFlexCard>
@@ -79,6 +100,7 @@ const Projects = ({
               <Th>Name</Th>
               <Th isNumeric>Configurations</Th>
               <Th>Date of Creation</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -92,6 +114,13 @@ const Projects = ({
                   <Td>{project.name}</Td>
                   <Td isNumeric>{project.configurationsCount ?? 0}</Td>
                   <Td>{new Date(project.createdAt).toDateString()}</Td>
+                  <Td>
+                    <ActionColumn
+                      id={project.id}
+                      onEdit={editProject}
+                      onDelete={deleteProject}
+                    />
+                  </Td>
                 </Tr>
               );
             })}
