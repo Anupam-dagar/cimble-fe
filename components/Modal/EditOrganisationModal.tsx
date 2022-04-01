@@ -9,12 +9,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { OrganisationModel } from "../../models/organisation";
 import OrganisationsContext from "../../store/organisationsContext";
+import {
+  createNotification,
+  updateNotification,
+} from "../../utils/notification";
 import BlurOverlay from "../Overlays/BlurOverlay";
 
 const EditOrganisationModal = ({
@@ -26,11 +31,17 @@ const EditOrganisationModal = ({
 }: any) => {
   const [name, setName] = useState(organisationName);
   const organisationContext = useContext(OrganisationsContext);
+  const toast = useToast();
 
   const editOrganisation = async (event: any) => {
     const data = {
       name,
     };
+    const notificationId = createNotification(
+      toast,
+      "Organisation",
+      "Updating"
+    );
     const result = await axios.put<OrganisationModel>(
       `${api.ORGANISATIONS_ROUTE}${id}`,
       data,
@@ -40,6 +51,7 @@ const EditOrganisationModal = ({
         },
       }
     );
+    updateNotification(notificationId, toast, "Organisation", "update");
     organisationContext.editOrganisation(result.data);
     onClose();
   };

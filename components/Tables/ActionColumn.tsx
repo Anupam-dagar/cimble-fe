@@ -20,7 +20,10 @@ const ActionColumn = ({
   info,
 }: {
   id: string;
-  onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  onDelete: (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => Promise<void>;
   type: TableType;
   name: string;
   info?: string;

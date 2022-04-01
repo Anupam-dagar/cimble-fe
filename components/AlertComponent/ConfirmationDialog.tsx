@@ -4,11 +4,15 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogOverlay,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import { TableType } from "../../constants/enum";
+import {
+  createNotification,
+  updateNotification,
+} from "../../utils/notification";
 import BlurOverlay from "../Overlays/BlurOverlay";
 
 const ConfirmationDialog = ({
@@ -20,14 +24,22 @@ const ConfirmationDialog = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onActionClick: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  onActionClick: (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => Promise<void>;
   id: string;
   type: TableType;
 }) => {
   const cancelRef = React.useRef<HTMLButtonElement>(null);
+  const toast = useToast();
 
-  const onActionButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onActionClick(e, id);
+  const onActionButtonClick = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const notificationId = createNotification(toast, type, "Deleting");
+    await onActionClick(e, id);
+    updateNotification(notificationId, toast, type, "delete");
     onClose();
   };
 

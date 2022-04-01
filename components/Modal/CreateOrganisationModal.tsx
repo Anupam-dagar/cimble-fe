@@ -9,6 +9,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -16,16 +17,26 @@ import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { OrganisationModel } from "../../models/organisation";
 import OrganisationsContext from "../../store/organisationsContext";
+import {
+  createNotification,
+  updateNotification,
+} from "../../utils/notification";
 import BlurOverlay from "../Overlays/BlurOverlay";
 
 const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
   const [name, setName] = useState("");
   const organisationContext = useContext(OrganisationsContext);
+  const toast = useToast();
 
   const createOrganisation = async (event: any) => {
     const data = {
       name,
     };
+    const notificationId = createNotification(
+      toast,
+      "Organisation",
+      "Creating"
+    );
     const result = await axios.post<OrganisationModel>(
       api.ORGANISATIONS_ROUTE,
       data,
@@ -35,6 +46,7 @@ const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
         },
       }
     );
+    updateNotification(notificationId, toast, "Organisation", "create");
     organisationContext.addOrganisation(result.data);
     onClose();
   };

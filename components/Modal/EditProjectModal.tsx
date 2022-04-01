@@ -9,12 +9,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { ProjectModel } from "../../models/project";
 import ProjectsContext from "../../store/projectsContext";
+import {
+  createNotification,
+  updateNotification,
+} from "../../utils/notification";
 import BlurOverlay from "../Overlays/BlurOverlay";
 
 const EditProjectModal = ({
@@ -26,11 +31,13 @@ const EditProjectModal = ({
 }: any) => {
   const [name, setName] = useState(projectName);
   const projectContext = useContext(ProjectsContext);
+  const toast = useToast();
 
   const editProject = async (event: any) => {
     const data = {
       name,
     };
+    const notificationId = createNotification(toast, "Project", "Updating");
     const result = await axios.put<ProjectModel>(
       `${api.PROJECTS_ROUTE}${id}`,
       data,
@@ -40,6 +47,7 @@ const EditProjectModal = ({
         },
       }
     );
+    updateNotification(notificationId, toast, "Project", "update");
     projectContext.editProject(result.data);
     onClose();
   };

@@ -9,27 +9,36 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
 import api from "../../constants/api";
 import { ConfigurationsModel } from "../../models/configurations";
-import { ProjectModel } from "../../models/project";
 import ConfigurationsContext from "../../store/configurationsContext";
-import ProjectsContext from "../../store/projectsContext";
 import BlurOverlay from "../Overlays/BlurOverlay";
+import {
+  createNotification,
+  updateNotification,
+} from "../../utils/notification";
 
 const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
   const [name, setName] = useState("");
   const [info, setInfo] = useState("");
   const configurationsContext = useContext(ConfigurationsContext);
+  const toast = useToast();
 
   const createConfiguration = async (event: any) => {
     const data = {
       name,
       info,
     };
+    const notificationId = createNotification(
+      toast,
+      "Configuration",
+      "Creating"
+    );
     const result = await axios.post<ConfigurationsModel>(
       `${api.CONFIGURATIONS_ROUTE}${Cookies.get("projectId")}`,
       data,
@@ -39,6 +48,7 @@ const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
         },
       }
     );
+    updateNotification(notificationId, toast, "Configuration", "create");
     configurationsContext.addConfiguration(result.data);
     onClose();
   };
