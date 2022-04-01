@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
+import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
 import HomeLayout from "../layouts/HomeLayout";
 import { OrganisationModel } from "../models/organisation";
@@ -46,6 +47,26 @@ const Organisations = ({
     Cookies.remove("projectId");
     Router.push("/projects");
   };
+
+  const deleteOrganisation = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    e.stopPropagation();
+    await axios.delete(
+      `${api.ORGANISATIONS_ROUTE}${id}`,
+      constructAuthHeader(localStorage.getItem("token") ?? "")
+    );
+    const organisations = stateOrganisations.filter((organisation) => {
+      return organisation.id !== id;
+    });
+    setStateOrganisations(organisations);
+  };
+
+  const editOrganisation = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {};
 
   return (
     <>
@@ -95,6 +116,7 @@ const Organisations = ({
               <Th>Name</Th>
               <Th isNumeric>Projects</Th>
               <Th>Date of Creation</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -108,6 +130,13 @@ const Organisations = ({
                   <Td>{organisation.name}</Td>
                   <Td isNumeric>{organisation.projectsCount ?? 0}</Td>
                   <Td>{new Date(organisation.createdAt).toDateString()}</Td>
+                  <Td>
+                    <ActionColumn
+                      id={organisation.id}
+                      onEdit={editOrganisation}
+                      onDelete={deleteOrganisation}
+                    />
+                  </Td>
                 </Tr>
               );
             })}
