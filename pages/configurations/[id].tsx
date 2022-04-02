@@ -1,7 +1,7 @@
 import {
-  Flex,
   Table,
   TableCaption,
+  TableContainer,
   Tbody,
   Td,
   Th,
@@ -109,62 +109,64 @@ const ProjectConfigurations = ({
   return (
     <>
       <HomeFlexCard>
-        <Table variant="unstyled" size={"lg"}>
-          <TableCaption>
-            Total {stateConfigurations.length} Configurations
-          </TableCaption>
-          <Thead>
-            <Tr>
-              <Th>S. No.</Th>
-              <Th>Name</Th>
-              <Th isNumeric>Value</Th>
-              <Th>Last Updated</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {stateConfigurations.map((configuration, index) => {
-              return (
-                <Tr>
-                  <Td>{index + 1}</Td>
-                  <Td>{configuration.name}</Td>
-                  <Td isNumeric>{configuration.info}</Td>
-                  <Td>{new Date(configuration.updatedAt).toDateString()}</Td>
-                  <Td>
-                    <ActionColumn
-                      id={configuration.id}
-                      onDelete={deleteConfiguration}
-                      type={TableType.CONFIGURATIONS}
-                      name={configuration.name}
-                      info={configuration.info}
-                    />
-                  </Td>
-                </Tr>
-              );
-            })}
-            <Tr>
-              <Td
-                bg={"teal.200"}
-                borderRadius={16}
-                colSpan={5}
-                _hover={{ bg: "teal.300", cursor: "pointer" }}
-                textAlign="center"
-                onClick={onOpen}
-              >
-                Create Configuration
-              </Td>
-            </Tr>
-            <Tr>
-              <Td colSpan={5} textAlign="center">
-                <PaginationBar
-                  totalPages={totalPages}
-                  currentPage={currentPage}
-                  onPageChange={changePage}
-                />
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
+        <TableContainer w="100%">
+          <Table variant="unstyled" size={"lg"}>
+            <TableCaption>
+              Total {stateConfigurations.length} Configurations
+            </TableCaption>
+            <Thead>
+              <Tr>
+                <Th>S. No.</Th>
+                <Th>Name</Th>
+                <Th isNumeric>Value</Th>
+                <Th>Last Updated</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {stateConfigurations.map((configuration, index) => {
+                return (
+                  <Tr>
+                    <Td>{index + 1}</Td>
+                    <Td>{configuration.name}</Td>
+                    <Td isNumeric>{configuration.info}</Td>
+                    <Td>{new Date(configuration.updatedAt).toDateString()}</Td>
+                    <Td>
+                      <ActionColumn
+                        id={configuration.id}
+                        onDelete={deleteConfiguration}
+                        type={TableType.CONFIGURATIONS}
+                        name={configuration.name}
+                        info={configuration.info}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+              <Tr>
+                <Td
+                  bg={"teal.200"}
+                  borderRadius={16}
+                  colSpan={5}
+                  _hover={{ bg: "teal.300", cursor: "pointer" }}
+                  textAlign="center"
+                  onClick={onOpen}
+                >
+                  Create Configuration
+                </Td>
+              </Tr>
+              <Tr>
+                <Td colSpan={5} textAlign="center">
+                  <PaginationBar
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={changePage}
+                  />
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
       </HomeFlexCard>
       <CreateConfigurationModal
         isOpen={isOpen}

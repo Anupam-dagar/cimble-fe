@@ -1,7 +1,7 @@
 import {
-  Flex,
   Table,
   TableCaption,
+  TableContainer,
   Tbody,
   Td,
   Th,
@@ -119,72 +119,76 @@ const Projects = ({
   return (
     <>
       <HomeFlexCard>
-        <Table variant="unstyled" size={"lg"}>
-          <TableCaption>
-            Total {totalConfigurations} Configurations in {projects.length}{" "}
-            Projects
-          </TableCaption>
-          <Thead>
-            <Tr>
-              <Th>S. No.</Th>
-              <Th>Name</Th>
-              <Th isNumeric>Configurations</Th>
-              <Th>Date of Creation</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {stateProjects.map((project, index) => {
-              return (
-                <Tr
-                  _hover={
-                    project.id === Cookies.get("projectId")
-                      ? { bg: "orange.200", cursor: "pointer" }
-                      : { bg: "gray.100", cursor: "pointer" }
-                  }
-                  bg={
-                    project.id === Cookies.get("projectId") ? "orange.100" : ""
-                  }
-                  onClick={() => selectProject(project.id, project.name)}
+        <TableContainer w="100%">
+          <Table variant="unstyled" size={"lg"}>
+            <TableCaption>
+              Total {totalConfigurations} Configurations in {projects.length}{" "}
+              Projects
+            </TableCaption>
+            <Thead>
+              <Tr>
+                <Th>S. No.</Th>
+                <Th>Name</Th>
+                <Th isNumeric>Configurations</Th>
+                <Th>Date of Creation</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {stateProjects.map((project, index) => {
+                return (
+                  <Tr
+                    _hover={
+                      project.id === Cookies.get("projectId")
+                        ? { bg: "orange.200", cursor: "pointer" }
+                        : { bg: "gray.100", cursor: "pointer" }
+                    }
+                    bg={
+                      project.id === Cookies.get("projectId")
+                        ? "orange.100"
+                        : ""
+                    }
+                    onClick={() => selectProject(project.id, project.name)}
+                  >
+                    <Td>{index + 1}</Td>
+                    <Td>{project.name}</Td>
+                    <Td isNumeric>{project.configurationsCount ?? 0}</Td>
+                    <Td>{new Date(project.createdAt).toDateString()}</Td>
+                    <Td>
+                      <ActionColumn
+                        id={project.id}
+                        onDelete={deleteProject}
+                        type={TableType.PROJECTS}
+                        name={project.name}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+              <Tr>
+                <Td
+                  bg={"teal.200"}
+                  borderRadius={16}
+                  colSpan={5}
+                  _hover={{ bg: "teal.300", cursor: "pointer" }}
+                  textAlign="center"
+                  onClick={onOpen}
                 >
-                  <Td>{index + 1}</Td>
-                  <Td>{project.name}</Td>
-                  <Td isNumeric>{project.configurationsCount ?? 0}</Td>
-                  <Td>{new Date(project.createdAt).toDateString()}</Td>
-                  <Td>
-                    <ActionColumn
-                      id={project.id}
-                      onDelete={deleteProject}
-                      type={TableType.PROJECTS}
-                      name={project.name}
-                    />
-                  </Td>
-                </Tr>
-              );
-            })}
-            <Tr>
-              <Td
-                bg={"teal.200"}
-                borderRadius={16}
-                colSpan={5}
-                _hover={{ bg: "teal.300", cursor: "pointer" }}
-                textAlign="center"
-                onClick={onOpen}
-              >
-                Create Project
-              </Td>
-            </Tr>
-            <Tr>
-              <Td colSpan={5} textAlign="center">
-                <PaginationBar
-                  totalPages={totalPages}
-                  currentPage={currentPage}
-                  onPageChange={changePage}
-                />
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
+                  Create Project
+                </Td>
+              </Tr>
+              <Tr>
+                <Td colSpan={5} textAlign="center">
+                  <PaginationBar
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={changePage}
+                  />
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
       </HomeFlexCard>
       <CreateProjectModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
     </>

@@ -1,36 +1,7 @@
-import { ChevronRightIcon, HamburgerIcon } from "@chakra-ui/icons";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Button,
-  Flex,
-  Heading,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
-  Spacer,
-  Stack,
-  useBreakpointValue,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Spacer } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import routes from "../../routes";
-import Separator from "../Separator/separator";
-import SidebarButton from "../Sidebar/sidebarButton";
+import HamburgerNavbar from "./HamburgetNavbar";
 
 const Navbar = ({
   projectName,
@@ -42,7 +13,6 @@ const Navbar = ({
   projectId: string;
 }) => {
   const router = useRouter();
-  const { onOpen, onClose, isOpen } = useDisclosure();
   const getNavHeading = () => {
     let heading = "Viewing ";
     if (projectName && organisationName) {
@@ -128,40 +98,7 @@ const Navbar = ({
       </Heading>
       <Spacer />
       {getNavButton()}
-      <Popover isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-        <PopoverTrigger>
-          <IconButton aria-label="Search database" icon={<HamburgerIcon />} />
-        </PopoverTrigger>
-        <PopoverContent w="100vw" _focus={{ borderColor: "transparent" }}>
-          <PopoverBody>
-            {routes.map((route, index) => {
-              if (route.separator) {
-                return (
-                  <>
-                    <Separator />
-                    <SidebarButton
-                      key={index}
-                      title={route.name}
-                      path={route.path}
-                      projectId={projectId}
-                      responsiveOnClose={onClose}
-                    />
-                  </>
-                );
-              }
-              return (
-                <SidebarButton
-                  key={index}
-                  title={route.name}
-                  path={route.path}
-                  projectId={projectId}
-                  responsiveOnClose={onClose}
-                />
-              );
-            })}
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+      <HamburgerNavbar projectId={projectId} />
     </Flex>
   );
 };

@@ -1,7 +1,7 @@
 import {
-  Flex,
   Table,
   TableCaption,
+  TableContainer,
   Tbody,
   Td,
   Th,
@@ -105,75 +105,77 @@ const Organisations = ({
   return (
     <>
       <HomeFlexCard>
-        <Table variant="unstyled" size={"lg"}>
-          <TableCaption>
-            Total {stateOrganisations.length} Organisations
-          </TableCaption>
-          <Thead>
-            <Tr>
-              <Th>S. No.</Th>
-              <Th>Name</Th>
-              <Th isNumeric>Projects</Th>
-              <Th>Date of Creation</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {stateOrganisations.map((organisation, index) => {
-              return (
-                <Tr
-                  _hover={
-                    organisation.id === Cookies.get("organisation")
-                      ? { bg: "orange.200", cursor: "pointer" }
-                      : { bg: "gray.100", cursor: "pointer" }
-                  }
-                  onClick={() =>
-                    selectOrganisation(organisation.id, organisation.name)
-                  }
-                  bg={
-                    organisation.id === Cookies.get("organisation")
-                      ? "orange.100"
-                      : ""
-                  }
+        <TableContainer w="100%">
+          <Table variant="unstyled" size={"lg"}>
+            <TableCaption>
+              Total {stateOrganisations.length} Organisations
+            </TableCaption>
+            <Thead>
+              <Tr>
+                <Th>S. No.</Th>
+                <Th>Name</Th>
+                <Th isNumeric>Projects</Th>
+                <Th>Date of Creation</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {stateOrganisations.map((organisation, index) => {
+                return (
+                  <Tr
+                    _hover={
+                      organisation.id === Cookies.get("organisation")
+                        ? { bg: "orange.200", cursor: "pointer" }
+                        : { bg: "gray.100", cursor: "pointer" }
+                    }
+                    onClick={() =>
+                      selectOrganisation(organisation.id, organisation.name)
+                    }
+                    bg={
+                      organisation.id === Cookies.get("organisation")
+                        ? "orange.100"
+                        : ""
+                    }
+                  >
+                    <Td>{index + 1}</Td>
+                    <Td>{organisation.name}</Td>
+                    <Td isNumeric>{organisation.projectsCount ?? 0}</Td>
+                    <Td>{new Date(organisation.createdAt).toDateString()}</Td>
+                    <Td>
+                      <ActionColumn
+                        id={organisation.id}
+                        onDelete={deleteOrganisation}
+                        type={TableType.ORGANISATIONS}
+                        name={organisation.name}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+              <Tr>
+                <Td
+                  bg={"teal.200"}
+                  borderRadius={16}
+                  colSpan={5}
+                  _hover={{ bg: "teal.300", cursor: "pointer" }}
+                  textAlign="center"
+                  onClick={onOpen}
                 >
-                  <Td>{index + 1}</Td>
-                  <Td>{organisation.name}</Td>
-                  <Td isNumeric>{organisation.projectsCount ?? 0}</Td>
-                  <Td>{new Date(organisation.createdAt).toDateString()}</Td>
-                  <Td>
-                    <ActionColumn
-                      id={organisation.id}
-                      onDelete={deleteOrganisation}
-                      type={TableType.ORGANISATIONS}
-                      name={organisation.name}
-                    />
-                  </Td>
-                </Tr>
-              );
-            })}
-            <Tr>
-              <Td
-                bg={"teal.200"}
-                borderRadius={16}
-                colSpan={5}
-                _hover={{ bg: "teal.300", cursor: "pointer" }}
-                textAlign="center"
-                onClick={onOpen}
-              >
-                Create Organisation
-              </Td>
-            </Tr>
-            <Tr>
-              <Td colSpan={5} textAlign="center">
-                <PaginationBar
-                  totalPages={totalPages}
-                  currentPage={currentPage}
-                  onPageChange={changePage}
-                />
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
+                  Create Organisation
+                </Td>
+              </Tr>
+              <Tr>
+                <Td colSpan={5} textAlign="center">
+                  <PaginationBar
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={changePage}
+                  />
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
+        </TableContainer>
       </HomeFlexCard>
       <CreateOrganisationModal
         isOpen={isOpen}
