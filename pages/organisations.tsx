@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
+import PaginationBar from "../components/Pagination/PaginationBar";
 import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
 import { TableType } from "../constants/enum";
@@ -28,18 +29,24 @@ import {
 
 const Organisations = ({
   organisations,
+  currentPage,
+  totalPages,
 }: {
   organisations: OrganisationModel[];
+  currentPage: number;
+  totalPages: number;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [stateOrganisations, setStateOrganisations] = useState(organisations);
   const organisationContext = useContext(OrganisationsContext);
 
   useEffect(() => {
+    console.log("empty useeffect");
     organisationContext.setOrganisations(organisations);
-  }, []);
+  }, [organisations]);
 
   useEffect(() => {
+    console.log("context useeffect");
     setStateOrganisations(organisationContext.organisations);
   }, [organisationContext]);
 
@@ -64,10 +71,14 @@ const Organisations = ({
     setStateOrganisations(organisations);
   };
 
-  const editOrganisation = (
+  const changePage = (
     e: React.MouseEvent<HTMLButtonElement>,
-    id: string
-  ) => {};
+    newPage: number
+  ) => {
+    console.log("changePage", newPage);
+    e.stopPropagation();
+    Router.push(`/organisations/?page=${newPage}`);
+  };
 
   return (
     <>
@@ -154,6 +165,15 @@ const Organisations = ({
                 Create Organisation
               </Td>
             </Tr>
+            <Tr>
+              <Td colSpan={5} textAlign="center">
+                <PaginationBar
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={changePage}
+                />
+              </Td>
+            </Tr>
           </Tbody>
         </Table>
       </Flex>
@@ -180,8 +200,15 @@ export const getServerSideProps = async (context: {
     return invalidateUserAuthentication();
   }
 
-  const organisations = (
-    await axios.get(api.ORGANISATIONS_ROUTE, {
+  let page = context.query.page;
+  let offset = 0;
+  if (page) {
+    page = parseInt(page);
+    offset = (page - 1) * 10;
+  }
+
+  const result = (
+    await axios.get(`${api.ORGANISATIONS_ROUTE}?offset=${offset}&limit=10`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -192,7 +219,9 @@ export const getServerSideProps = async (context: {
     props: {
       token,
       refreshToken,
-      organisations,
+      organisations: result.organisations,
+      currentPage: page ?? 1,
+      totalPages: result.page.totalPages,
     },
   };
 };
