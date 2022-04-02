@@ -154,8 +154,17 @@ const Organisations = ({
             {stateOrganisations.map((organisation, index) => {
               return (
                 <Tr
-                  _hover={{ bg: "gray.100", cursor: "pointer" }}
+                  _hover={
+                    organisation.id === Cookies.get("organisation")
+                      ? { bg: "orange.200", cursor: "pointer" }
+                      : { bg: "gray.100", cursor: "pointer" }
+                  }
                   onClick={() => selectOrganisation(organisation.id)}
+                  bg={
+                    organisation.id === Cookies.get("organisation")
+                      ? "orange.100"
+                      : ""
+                  }
                 >
                   <Td>{index + 1}</Td>
                   <Td>{organisation.name}</Td>

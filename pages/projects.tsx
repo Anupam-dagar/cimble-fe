@@ -136,7 +136,14 @@ const Projects = ({
             {stateProjects.map((project, index) => {
               return (
                 <Tr
-                  _hover={{ bg: "gray.100", cursor: "pointer" }}
+                  _hover={
+                    project.id === Cookies.get("projectId")
+                      ? { bg: "orange.200", cursor: "pointer" }
+                      : { bg: "gray.100", cursor: "pointer" }
+                  }
+                  bg={
+                    project.id === Cookies.get("projectId") ? "orange.100" : ""
+                  }
                   onClick={() => selectProject(project.id)}
                 >
                   <Td>{index + 1}</Td>
