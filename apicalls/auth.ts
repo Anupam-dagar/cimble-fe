@@ -8,3 +8,7 @@ export const refreshLogin = async (refreshToken: string) => {
     },
   });
 };
+
+export const refreshNextLogin = async () => {
+  return axios.post(api.NEXT_REFRESH_LOGIN_URL);
+};

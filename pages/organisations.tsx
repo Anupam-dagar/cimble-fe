@@ -13,7 +13,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
-import { refreshLogin } from "../apicalls/auth";
+import { refreshLogin, refreshNextLogin } from "../apicalls/auth";
 import {
   deleteOrganisationsApi,
   getOrganisationsApi,
@@ -64,13 +64,12 @@ const Organisations = ({
   ) => {
     e.stopPropagation();
     try {
-      await deleteOrganisationsApi(id, localStorage.getItem("token") ?? "");
+      await deleteOrganisationsApi(id, Cookies.get("token") ?? "");
     } catch (err: any) {
+      console.log(err.response.status);
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (
-            await refreshLogin(localStorage.getItem("refreshToken") ?? "")
-          ).data;
+          const refreshLoginResult = (await refreshNextLogin()).data;
           await deleteOrganisationsApi(id, refreshLoginResult.refreshToken);
         } catch (err: any) {
           throw err;
@@ -202,7 +201,9 @@ Organisations.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { token, refreshToken } = parseDataFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(
+    context.req.headers.cookie
+  );
 
   if (!token || !refreshToken) {
     return invalidateUserAuthentication();

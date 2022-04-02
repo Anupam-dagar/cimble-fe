@@ -11,17 +11,16 @@ import {
   ModalHeader,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
-import api from "../../constants/api";
-import { ConfigurationsModel } from "../../models/configurations";
 import ConfigurationsContext from "../../store/configurationsContext";
 import BlurOverlay from "../Overlays/BlurOverlay";
 import {
   createNotification,
   updateNotification,
 } from "../../utils/notification";
+import { createConfigurationsApi } from "../../apicalls/configurations";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
 
 const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
   const [name, setName] = useState("");
@@ -39,17 +38,35 @@ const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
       "Configuration",
       "Creating"
     );
-    const result = await axios.post<ConfigurationsModel>(
-      `${api.CONFIGURATIONS_ROUTE}${Cookies.get("projectId")}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    let result;
+    try {
+      result = (
+        await createConfigurationsApi(
+          Cookies.get("projectId") ?? "",
+          data,
+          Cookies.get("token") ?? ""
+        )
+      ).data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshNextLogin()).data;
+          result = (
+            await createConfigurationsApi(
+              Cookies.get("projectId") ?? "",
+              data,
+              refreshLoginResult.token
+            )
+          ).data;
+        } catch (err: any) {
+          throw err;
+        }
       }
-    );
+    }
     updateNotification(notificationId, toast, "Configuration", "create");
-    configurationsContext.addConfiguration(result.data);
+    if (result) {
+      configurationsContext.addConfiguration(result);
+    }
     onClose();
   };
 

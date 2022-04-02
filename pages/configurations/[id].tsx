@@ -13,7 +13,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
-import { refreshLogin } from "../../apicalls/auth";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
 import {
   deleteConfigurationsApi,
   getConfigurationsApi,
@@ -66,14 +66,12 @@ const ProjectConfigurations = ({
       await deleteConfigurationsApi(
         projectId ?? "",
         id,
-        localStorage.getItem("token") ?? ""
+        Cookies.get("token") ?? ""
       );
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (
-            await refreshLogin(localStorage.getItem("refreshToken") ?? "")
-          ).data;
+          const refreshLoginResult = (await refreshNextLogin()).data;
           await deleteConfigurationsApi(
             projectId ?? "",
             id,
@@ -207,7 +205,9 @@ ProjectConfigurations.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { token, refreshToken, projectId } = parseDataFromCookie(context);
+  const { token, refreshToken, projectId } = parseDataFromCookie(
+    context.req.headers.cookie
+  );
 
   if (!token || !refreshToken) {
     return invalidateUserAuthentication();

@@ -21,11 +21,7 @@ import Router from "next/router";
 import { useState } from "react";
 import api from "../constants/api";
 import { LoginResponse } from "../models/loginResponse";
-import {
-  invalidateUserAuthentication,
-  parseDataFromCookie,
-  validateUserAuthentication,
-} from "../utils/auth";
+import { parseDataFromCookie, validateUserAuthentication } from "../utils/auth";
 
 const LoginPage: NextPage = () => {
   const [errorMessage, setError] = useState<string | null>(null);
@@ -53,8 +49,6 @@ const LoginPage: NextPage = () => {
       return;
     }
 
-    localStorage.setItem("token", loginResponse.token);
-    localStorage.setItem("refreshToken", loginResponse.refreshToken);
     Router.replace("/");
   };
 
@@ -139,7 +133,9 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseDataFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(
+    context.req.headers.cookie
+  );
 
   if (token) {
     return validateUserAuthentication();

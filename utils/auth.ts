@@ -1,15 +1,14 @@
 import cookie from "cookie";
 
-export const parseDataFromCookie = (context: any) => {
+export const parseDataFromCookie = (reqCookie?: any) => {
   let isAuthenticated = false;
   let token = null;
   let refreshToken = null;
   let organisation = null;
   let projectId = null;
-  if (context.req.headers.cookie) {
-    ({ token, refreshToken, organisation, projectId } = cookie.parse(
-      context.req.headers.cookie
-    ));
+  if (reqCookie) {
+    ({ token, refreshToken, organisation, projectId } =
+      cookie.parse(reqCookie));
     isAuthenticated = !!token;
   }
 

@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
+import { createOrganisationApi } from "../../apicalls/organisations";
 import api from "../../constants/api";
 import { OrganisationModel } from "../../models/organisation";
 import OrganisationsContext from "../../store/organisationsContext";
@@ -37,17 +39,25 @@ const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
       "Organisation",
       "Creating"
     );
-    const result = await axios.post<OrganisationModel>(
-      api.ORGANISATIONS_ROUTE,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    let result;
+    try {
+      result = (await createOrganisationApi(data, Cookies.get("token") ?? ""))
+        .data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshNextLogin()).data;
+          result = (await createOrganisationApi(data, refreshLoginResult.token))
+            .data;
+        } catch (err: any) {
+          throw err;
+        }
       }
-    );
+    }
     updateNotification(notificationId, toast, "Organisation", "create");
-    organisationContext.addOrganisation(result.data);
+    if (result) {
+      organisationContext.addOrganisation(result);
+    }
     onClose();
   };
 

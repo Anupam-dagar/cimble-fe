@@ -37,8 +37,6 @@ const SidebarButton = (props: {
       case "/logout": {
         e.preventDefault();
         await axios.post(api.NEXT_LOGOUT_URL);
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
         Router.replace("/login");
       }
       default: {

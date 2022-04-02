@@ -12,7 +12,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
+import { editProjectApi } from "../../apicalls/projects";
 import api from "../../constants/api";
 import { ProjectModel } from "../../models/project";
 import ProjectsContext from "../../store/projectsContext";
@@ -38,17 +41,25 @@ const EditProjectModal = ({
       name,
     };
     const notificationId = createNotification(toast, "Project", "Updating");
-    const result = await axios.put<ProjectModel>(
-      `${api.PROJECTS_ROUTE}${id}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    let result;
+    try {
+      result = (await editProjectApi(data, id, Cookies.get("token") ?? ""))
+        .data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshNextLogin()).data;
+          result = (await editProjectApi(data, id, refreshLoginResult.token))
+            .data;
+        } catch (err: any) {
+          throw err;
+        }
       }
-    );
+    }
     updateNotification(notificationId, toast, "Project", "update");
-    projectContext.editProject(result.data);
+    if (result) {
+      projectContext.editProject(result);
+    }
     onClose();
   };
 

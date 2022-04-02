@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
+import { editConfigurationsApi } from "../../apicalls/configurations";
 import api from "../../constants/api";
 import { ConfigurationsModel } from "../../models/configurations";
 import ConfigurationsContext from "../../store/configurationsContext";
@@ -46,18 +48,37 @@ const EditConfigurationModal = ({
       "Configuration",
       "Updating"
     );
-    const result = await axios.put<ConfigurationsModel>(
-      `${api.CONFIGURATIONS_ROUTE}${Cookies.get("projectId")}/${id}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+    let result;
+    try {
+      result = (
+        await editConfigurationsApi(
+          Cookies.get("projectId") ?? "",
+          id,
+          data,
+          Cookies.get("token") ?? ""
+        )
+      ).data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshNextLogin()).data;
+          result = (
+            await editConfigurationsApi(
+              Cookies.get("projectId") ?? "",
+              id,
+              data,
+              refreshLoginResult.token
+            )
+          ).data;
+        } catch (err: any) {
+          throw err;
+        }
       }
-    );
+    }
     updateNotification(notificationId, toast, "Configuration", "update");
-
-    configurationsContext.editConfiguration(result.data);
+    if (result) {
+      configurationsContext.editConfiguration(result);
+    }
     onClose();
   };
 

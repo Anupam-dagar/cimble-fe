@@ -14,6 +14,8 @@ import {
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useState } from "react";
+import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
+import { createProjectApi } from "../../apicalls/projects";
 import api from "../../constants/api";
 import { ProjectModel } from "../../models/project";
 import ProjectsContext from "../../store/projectsContext";
@@ -34,13 +36,24 @@ const CreateProjectModal = ({ isOpen, onOpen, onClose }: any) => {
       organisationId: Cookies.get("organisation"),
     };
     const notificationId = createNotification(toast, "Project", "Creating");
-    const result = await axios.post<ProjectModel>(api.PROJECTS_ROUTE, data, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    let result;
+    try {
+      result = (await createProjectApi(data, Cookies.get("token") ?? "")).data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshNextLogin()).data;
+          result = (await createProjectApi(data, refreshLoginResult.token))
+            .data;
+        } catch (err: any) {
+          throw err;
+        }
+      }
+    }
     updateNotification(notificationId, toast, "Project", "create");
-    projectsContext.addProject(result.data);
+    if (result) {
+      projectsContext.addProject(result);
+    }
     onClose();
   };
 

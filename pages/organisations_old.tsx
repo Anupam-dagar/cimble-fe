@@ -112,7 +112,9 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken } = parseDataFromCookie(context);
+  const { token, refreshToken } = parseDataFromCookie(
+    context.req.headers.cookie
+  );
 
   if (!token) {
     return invalidateUserAuthentication();
