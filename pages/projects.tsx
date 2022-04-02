@@ -182,14 +182,14 @@ export const getServerSideProps = async (context: {
   let offset = 0;
   if (page) {
     page = parseInt(page);
-    offset = (page - 1) * 1;
+    offset = (page - 1) * 10;
   }
 
   let projects;
   if (organisation) {
     projects = (
       await axios.get(
-        `${api.PROJECTS_ROUTE}${organisation}?offset=${offset}&limit=1`,
+        `${api.PROJECTS_ROUTE}${organisation}?offset=${offset}&limit=10`,
         constructAuthHeader(token)
       )
     ).data;

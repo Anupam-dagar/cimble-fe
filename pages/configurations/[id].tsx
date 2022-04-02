@@ -11,8 +11,10 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import CreateConfigurationModal from "../../components/Modal/CreateConfigurationModal";
+import PaginationBar from "../../components/Pagination/PaginationBar";
 import ActionColumn from "../../components/Tables/ActionColumn";
 import api from "../../constants/api";
 import { TableType } from "../../constants/enum";
@@ -27,8 +29,12 @@ import {
 
 const ProjectConfigurations = ({
   configurations,
+  currentPage,
+  totalPages,
 }: {
   configurations: ConfigurationsModel[];
+  currentPage: number;
+  totalPages: number;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -38,7 +44,7 @@ const ProjectConfigurations = ({
 
   useEffect(() => {
     configurationsContext.setConfigurations(configurations);
-  }, []);
+  }, [configurations]);
 
   useEffect(() => {
     setStateConfigurations(configurationsContext.configurations);
@@ -58,6 +64,14 @@ const ProjectConfigurations = ({
       return configuration.id !== id;
     });
     setStateConfigurations(configurations);
+  };
+
+  const changePage = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    newPage: number
+  ) => {
+    e.stopPropagation();
+    Router.push(`/configurations/${Cookies.get("projectId")}?page=${newPage}`);
   };
 
   return (
@@ -143,6 +157,15 @@ const ProjectConfigurations = ({
                 Create Configuration
               </Td>
             </Tr>
+            <Tr>
+              <Td colSpan={5} textAlign="center">
+                <PaginationBar
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={changePage}
+                />
+              </Td>
+            </Tr>
           </Tbody>
         </Table>
       </Flex>
@@ -169,10 +192,17 @@ export const getServerSideProps = async (context: {
     return invalidateUserAuthentication();
   }
 
+  let page = context.query.page;
+  let offset = 0;
+  if (page) {
+    page = parseInt(page);
+    offset = (page - 1) * 10;
+  }
+
   const { id: selectedProjectId }: { id: string } = context.query;
   const configurations = (
-    await axios.get<ConfigurationsModel[]>(
-      `${api.CONFIGURATIONS_ROUTE}${selectedProjectId}`,
+    await axios.get(
+      `${api.CONFIGURATIONS_ROUTE}${selectedProjectId}?offset=${offset}&limit=10`,
       constructAuthHeader(token)
     )
   ).data;
@@ -181,8 +211,10 @@ export const getServerSideProps = async (context: {
     props: {
       token,
       refreshToken,
-      configurations,
+      configurations: configurations.configurations,
       projectId: projectId ?? null,
+      totalPages: configurations.page.totalPages,
+      currentPage: page ?? 1,
     },
   };
 };
