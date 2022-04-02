@@ -40,8 +40,7 @@ const AlertComponent = ({
       mx="auto"
       pb="8px"
       right={{
-        sm: "20px",
-        xl: "30px",
+        lg: "30px",
       }}
       px={{
         sm: "15px",
@@ -55,7 +54,7 @@ const AlertComponent = ({
         xl: "8px",
       }}
       top="120px"
-      w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
+      w={{ base: "1005", lg: "calc(100vw - 75px - 275px)" }}
     >
       <AlertIcon boxSize="40px" mr={0} />
       <AlertTitle mt={4} mb={1} fontSize="lg">

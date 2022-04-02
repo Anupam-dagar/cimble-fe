@@ -21,8 +21,7 @@ const HomeFlexCard = ({ children }: { children: React.ReactNode }) => {
       mx="auto"
       pb="8px"
       right={{
-        sm: "20px",
-        xl: "30px",
+        lg: "30px",
       }}
       px={{
         sm: "15px",
@@ -36,7 +35,7 @@ const HomeFlexCard = ({ children }: { children: React.ReactNode }) => {
         xl: "8px",
       }}
       top="120px"
-      w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
+      w={{ base: "100%", lg: "calc(100vw - 75px - 265px)" }}
     >
       {children}
     </Flex>

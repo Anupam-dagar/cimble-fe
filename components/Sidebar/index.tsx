@@ -7,8 +7,8 @@ const Sidebar = ({ projectId }: { projectId: string }) => {
   let sidebarMargins = "16px 0px 16px 16px";
 
   return (
-    <Box>
-      <Box display={{ sm: "none", xl: "block" }} position="fixed">
+    <Box display={{ base: "none", lg: "block" }}>
+      <Box display={{ base: "none", lg: "block" }} position="fixed">
         <Box
           bg="white"
           transition="0.2s linear"
