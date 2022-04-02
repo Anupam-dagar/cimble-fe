@@ -1,11 +1,11 @@
 const routes = [
-  {
-    path: "/",
-    name: "Dashboard",
-    icon: `<SunIcon color="inherit" />`,
-    layout: "/",
-    separator: false,
-  },
+  // {
+  //   path: "/",
+  //   name: "Dashboard",
+  //   icon: `<SunIcon color="inherit" />`,
+  //   layout: "/",
+  //   separator: false,
+  // },
   {
     path: "/organisations",
     name: "Organisations",

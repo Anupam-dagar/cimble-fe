@@ -27,20 +27,26 @@ export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, refreshToken, projectId, projectName, organisationName } =
-    parseDataFromCookie(context.req.headers.cookie);
-
-  if (!token) {
-    return invalidateUserAuthentication();
-  }
-
   return {
-    props: {
-      projectId: projectId ?? null,
-      projectName: projectName ?? null,
-      organisationName: organisationName ?? null,
+    redirect: {
+      destination: "/organisations",
+      permanent: false,
     },
   };
+  // const { token, refreshToken, projectId, projectName, organisationName } =
+  //   parseDataFromCookie(context.req.headers.cookie);
+
+  // if (!token) {
+  //   return invalidateUserAuthentication();
+  // }
+
+  // return {
+  //   props: {
+  //     projectId: projectId ?? null,
+  //     projectName: projectName ?? null,
+  //     organisationName: organisationName ?? null,
+  //   },
+  // };
 };
 
 export default Home;

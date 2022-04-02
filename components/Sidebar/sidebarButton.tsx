@@ -10,6 +10,7 @@ const SidebarButton = (props: {
   title: string;
   path: string;
   projectId: string;
+  responsiveOnClose?: () => void;
 }) => {
   const router = useRouter();
   const activeBg = useColorModeValue("gray.200", "gray.700");
@@ -40,6 +41,9 @@ const SidebarButton = (props: {
         Router.replace("/login");
       }
       default: {
+        if (props.responsiveOnClose) {
+          props.responsiveOnClose();
+        }
         // no action
       }
     }

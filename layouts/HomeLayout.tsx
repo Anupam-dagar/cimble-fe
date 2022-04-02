@@ -1,3 +1,12 @@
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Portal,
+} from "@chakra-ui/react";
 import React from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -17,7 +26,11 @@ const HomeLayout = ({
   return (
     <>
       <Sidebar projectId={projectId} />
-      <Navbar projectName={projectName} organisationName={organisationName} />
+      <Navbar
+        projectId={projectId}
+        projectName={projectName}
+        organisationName={organisationName}
+      />
       {children}
     </>
   );

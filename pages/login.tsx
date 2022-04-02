@@ -49,7 +49,7 @@ const LoginPage: NextPage = () => {
       return;
     }
 
-    Router.replace("/");
+    Router.replace("/organisations");
   };
 
   const performFieldValidation = (includeNull: boolean) => {

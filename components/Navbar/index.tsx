@@ -1,25 +1,48 @@
-import { ChevronRightIcon } from "@chakra-ui/icons";
+import { ChevronRightIcon, HamburgerIcon } from "@chakra-ui/icons";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
   Flex,
   Heading,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Spacer,
+  Stack,
+  useBreakpointValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import routes from "../../routes";
+import Separator from "../Separator/separator";
+import SidebarButton from "../Sidebar/sidebarButton";
 
 const Navbar = ({
   projectName,
   organisationName,
+  projectId,
 }: {
   projectName: string;
   organisationName: string;
+  projectId: string;
 }) => {
   const router = useRouter();
-
+  const { onOpen, onClose, isOpen } = useDisclosure();
   const getNavHeading = () => {
     let heading = "Viewing ";
     if (projectName && organisationName) {
@@ -40,19 +63,23 @@ const Navbar = ({
     switch (route) {
       case "configurations":
         return (
-          <Link href="/projects">
-            <Button colorScheme="teal" size="md">
-              Change Project
-            </Button>
-          </Link>
+          <Box display={{ base: "none", lg: "block" }}>
+            <Link href="/projects">
+              <Button colorScheme="teal" size="md">
+                Change Project
+              </Button>
+            </Link>
+          </Box>
         );
       default:
         return (
-          <Link href="/organisations">
-            <Button colorScheme="teal" size="md">
-              Change Organisation
-            </Button>
-          </Link>
+          <Box display={{ base: "none", lg: "block" }}>
+            <Link href="/organisations">
+              <Button colorScheme="teal" size="md">
+                Change Organisation
+              </Button>
+            </Link>
+          </Box>
         );
     }
   };
@@ -93,11 +120,48 @@ const Navbar = ({
       top="18px"
       w={{ base: "100%", lg: "calc(100vw - 75px - 265px)" }}
     >
-      <Heading as="h4" size="md">
+      <Heading as="h4" size="md" display={{ base: "none", lg: "block" }}>
         {getNavHeading()}
+      </Heading>
+      <Heading as="h4" size="md" display={{ base: "block", lg: "none" }}>
+        Cimble
       </Heading>
       <Spacer />
       {getNavButton()}
+      <Popover isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+        <PopoverTrigger>
+          <IconButton aria-label="Search database" icon={<HamburgerIcon />} />
+        </PopoverTrigger>
+        <PopoverContent w="100vw" _focus={{ borderColor: "transparent" }}>
+          <PopoverBody>
+            {routes.map((route, index) => {
+              if (route.separator) {
+                return (
+                  <>
+                    <Separator />
+                    <SidebarButton
+                      key={index}
+                      title={route.name}
+                      path={route.path}
+                      projectId={projectId}
+                      responsiveOnClose={onClose}
+                    />
+                  </>
+                );
+              }
+              return (
+                <SidebarButton
+                  key={index}
+                  title={route.name}
+                  path={route.path}
+                  projectId={projectId}
+                  responsiveOnClose={onClose}
+                />
+              );
+            })}
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Flex>
   );
 };
