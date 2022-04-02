@@ -17,14 +17,23 @@ const Configurations = () => {
 };
 
 Configurations.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
+  return (
+    <HomeLayout
+      projectId={page.props.projectId}
+      projectName={page.props.projectName}
+      organisationName={page.props.organisationName}
+    >
+      {page}
+    </HomeLayout>
+  );
 };
 
 export const getServerSideProps = async (context: {
   query: any;
   req: { headers: { cookie: string } };
 }) => {
-  const { token, projectId } = parseDataFromCookie(context.req.headers.cookie);
+  const { token, projectId, projectName, organisationName } =
+    parseDataFromCookie(context.req.headers.cookie);
 
   if (!token) {
     return invalidateUserAuthentication();
@@ -40,7 +49,10 @@ export const getServerSideProps = async (context: {
   }
 
   return {
-    props: {},
+    props: {
+      projectName: projectName ?? null,
+      organisationName: organisationName ?? null,
+    },
   };
 };
 

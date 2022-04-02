@@ -7,9 +7,17 @@ export const parseDataFromCookie = (reqCookie?: any) => {
   let refreshToken = null;
   let organisation = null;
   let projectId = null;
+  let projectName = null;
+  let organisationName = null;
   if (reqCookie) {
-    ({ token, refreshToken, organisation, projectId } =
-      cookie.parse(reqCookie));
+    ({
+      token,
+      refreshToken,
+      organisation,
+      projectId,
+      projectName,
+      organisationName,
+    } = cookie.parse(reqCookie));
     isAuthenticated = !!token;
   }
 
@@ -18,6 +26,8 @@ export const parseDataFromCookie = (reqCookie?: any) => {
     refreshToken,
     organisation,
     projectId,
+    projectName,
+    organisationName,
   };
 };
 
@@ -73,6 +83,8 @@ export const clearCookies = () => {
   Cookies.remove("organisation");
   Cookies.remove("token");
   Cookies.remove("refreshToken");
+  Cookies.remove("projectName");
+  Cookies.remove("organisationName");
 };
 
 export const clearCookiesServerSide = (res: any) => {
@@ -99,6 +111,20 @@ export const clearCookiesServerSide = (res: any) => {
       path: "/",
     }),
     cookie.serialize("projectId", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("projectName", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("organisationName", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       expires: new Date(0),

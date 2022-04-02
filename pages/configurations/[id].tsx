@@ -210,13 +210,20 @@ const ProjectConfigurations = ({
 };
 
 ProjectConfigurations.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
+  return (
+    <HomeLayout
+      projectId={page.props.projectId}
+      projectName={page.props.projectName}
+      organisationName={page.props.organisationName}
+    >
+      {page}
+    </HomeLayout>
+  );
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { token, refreshToken, projectId } = parseDataFromCookie(
-    context.req.headers.cookie
-  );
+  const { token, refreshToken, projectId, projectName, organisationName } =
+    parseDataFromCookie(context.req.headers.cookie);
 
   if (!token || !refreshToken) {
     return invalidateUserAuthentication();
@@ -231,12 +238,6 @@ export const getServerSideProps = async (context: any) => {
 
   const { id: selectedProjectId }: { id: string } = context.query;
   let configurations;
-  const a = (
-    await axios.get(
-      `${api.CONFIGURATIONS_ROUTE}${selectedProjectId}?offset=${offset}&limit=10`,
-      constructAuthHeader(token)
-    )
-  ).data;
 
   let isError = false;
   let refreshLoginFailed = false;
@@ -257,6 +258,7 @@ export const getServerSideProps = async (context: any) => {
           );
         } catch (err: any) {
           refreshLoginFailed = true;
+          throw err;
         }
 
         configurations = (
@@ -282,6 +284,8 @@ export const getServerSideProps = async (context: any) => {
       totalPages: configurations?.page?.totalPages ?? 1,
       currentPage: page ?? 1,
       isError,
+      projectName: projectName ?? null,
+      organisationName: organisationName ?? null,
     },
   };
 };

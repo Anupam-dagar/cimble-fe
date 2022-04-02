@@ -6,14 +6,18 @@ import { parseDataFromCookie } from "../utils/auth";
 const HomeLayout = ({
   children,
   projectId,
+  projectName,
+  organisationName,
 }: {
   children: React.ReactNode;
   projectId: string;
+  projectName: string;
+  organisationName: string;
 }) => {
   return (
     <>
       <Sidebar projectId={projectId} />
-      <Navbar />
+      <Navbar projectName={projectName} organisationName={organisationName} />
       {children}
     </>
   );

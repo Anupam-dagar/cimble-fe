@@ -3,24 +3,57 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Button,
   Flex,
+  Heading,
+  Spacer,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
-const Navbar = () => {
+const Navbar = ({
+  projectName,
+  organisationName,
+}: {
+  projectName: string;
+  organisationName: string;
+}) => {
   const router = useRouter();
 
-  const activeRoute = () => {
-    const route = router.pathname;
+  const getNavHeading = () => {
+    let heading = "Viewing ";
+    if (projectName && organisationName) {
+      heading += `${projectName} project in ${organisationName} organisation`;
+      return heading;
+    }
+
+    if (organisationName && !projectName) {
+      heading += `organisation ${organisationName}`;
+      return heading;
+    }
+
+    return `Welcome to Cimble`;
+  };
+
+  const getNavButton = () => {
+    const route = router.pathname.split("/")[1];
     switch (route) {
-      case "/":
-        return "Dashboard";
-      case "/projects":
-        return "Projects";
-      case "/configurations":
-        return "Configurations";
+      case "configurations":
+        return (
+          <Link href="/projects">
+            <Button colorScheme="teal" size="md">
+              Change Project
+            </Button>
+          </Link>
+        );
       default:
-        return null;
+        return (
+          <Link href="/organisations">
+            <Button colorScheme="teal" size="md">
+              Change Organisation
+            </Button>
+          </Link>
+        );
     }
   };
 
@@ -61,15 +94,11 @@ const Navbar = () => {
       top="18px"
       w={{ sm: "calc(100vw - 50px)", xl: "calc(100vw - 75px - 275px)" }}
     >
-      <Breadcrumb separator={<ChevronRightIcon color="gray.500" />}>
-        <BreadcrumbItem>
-          <BreadcrumbLink>Home</BreadcrumbLink>
-        </BreadcrumbItem>
-
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">{activeRoute()}</BreadcrumbLink>
-        </BreadcrumbItem>
-      </Breadcrumb>
+      <Heading as="h4" size="md">
+        {getNavHeading()}
+      </Heading>
+      <Spacer />
+      {getNavButton()}
     </Flex>
   );
 };

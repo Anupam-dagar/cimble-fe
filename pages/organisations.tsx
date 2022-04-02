@@ -54,9 +54,11 @@ const Organisations = ({
     setStateOrganisations(organisationContext.organisations);
   }, [organisationContext]);
 
-  const selectOrganisation = (id: string) => {
+  const selectOrganisation = (id: string, organisationName: string) => {
     Cookies.set("organisation", id);
+    Cookies.set("organisationName", organisationName);
     Cookies.remove("projectId");
+    Cookies.remove("projectName");
     Router.push("/projects");
   };
 
@@ -159,7 +161,9 @@ const Organisations = ({
                       ? { bg: "orange.200", cursor: "pointer" }
                       : { bg: "gray.100", cursor: "pointer" }
                   }
-                  onClick={() => selectOrganisation(organisation.id)}
+                  onClick={() =>
+                    selectOrganisation(organisation.id, organisation.name)
+                  }
                   bg={
                     organisation.id === Cookies.get("organisation")
                       ? "orange.100"
@@ -215,13 +219,20 @@ const Organisations = ({
 };
 
 Organisations.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
+  return (
+    <HomeLayout
+      projectId={page.props.projectId}
+      projectName={page.props.projectName}
+      organisationName={page.props.organisationName}
+    >
+      {page}
+    </HomeLayout>
+  );
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { token, refreshToken } = parseDataFromCookie(
-    context.req.headers.cookie
-  );
+  const { token, refreshToken, projectName, organisationName } =
+    parseDataFromCookie(context.req.headers.cookie);
 
   if (!token || !refreshToken) {
     return invalidateUserAuthentication();
@@ -252,6 +263,7 @@ export const getServerSideProps = async (context: any) => {
           );
         } catch (err: any) {
           refreshLoginFailed = true;
+          throw err;
         }
         result = (await getOrganisationsApi(offset, refreshLoginResult.token))
           .data;
@@ -274,6 +286,8 @@ export const getServerSideProps = async (context: any) => {
       currentPage: page ?? 1,
       totalPages: result?.page?.totalPages ?? 1,
       isError,
+      projectName: projectName ?? null,
+      organisationName: organisationName ?? null,
     },
   };
 };

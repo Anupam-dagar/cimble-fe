@@ -72,8 +72,9 @@ const Projects = ({
     0
   );
 
-  const selectProject = (projectId: string) => {
+  const selectProject = (projectId: string, projectName: string) => {
     Cookies.set("projectId", projectId);
+    Cookies.set("projectName", projectName);
     Router.push(`/configurations/${projectId}`);
   };
 
@@ -144,7 +145,7 @@ const Projects = ({
                   bg={
                     project.id === Cookies.get("projectId") ? "orange.100" : ""
                   }
-                  onClick={() => selectProject(project.id)}
+                  onClick={() => selectProject(project.id, project.name)}
                 >
                   <Td>{index + 1}</Td>
                   <Td>{project.name}</Td>
@@ -191,13 +192,26 @@ const Projects = ({
 };
 
 Projects.getLayout = function getLayout(page: ReactElement) {
-  return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
+  return (
+    <HomeLayout
+      projectId={page.props.projectId}
+      projectName={page.props.projectName}
+      organisationName={page.props.organisationName}
+    >
+      {page}
+    </HomeLayout>
+  );
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { token, refreshToken, organisation, projectId } = parseDataFromCookie(
-    context.req.headers.cookie
-  );
+  const {
+    token,
+    refreshToken,
+    organisation,
+    projectId,
+    projectName,
+    organisationName,
+  } = parseDataFromCookie(context.req.headers.cookie);
 
   if (!token || !refreshToken) {
     return invalidateUserAuthentication();
@@ -229,6 +243,7 @@ export const getServerSideProps = async (context: any) => {
             );
           } catch (err: any) {
             refreshLoginFailed = true;
+            throw err;
           }
 
           projects = (
@@ -256,6 +271,8 @@ export const getServerSideProps = async (context: any) => {
       totalPages: projects?.page?.totalPages ?? 1,
       currentPage: page ?? 1,
       isError,
+      projectName: projectName ?? null,
+      organisationName: organisationName ?? null,
     },
   };
 };
