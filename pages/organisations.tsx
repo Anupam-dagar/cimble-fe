@@ -75,9 +75,8 @@ const Organisations = ({
     e: React.MouseEvent<HTMLButtonElement>,
     newPage: number
   ) => {
-    console.log("changePage", newPage);
     e.stopPropagation();
-    Router.push(`/organisations/?page=${newPage}`);
+    Router.push(`/organisations?page=${newPage}`);
   };
 
   return (

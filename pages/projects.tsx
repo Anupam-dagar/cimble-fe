@@ -16,6 +16,7 @@ import { ReactElement, useContext, useEffect, useState } from "react";
 import AlertComponent from "../components/AlertComponent";
 import HomeFlexCard from "../components/Cards/HomeFlexCard";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
+import PaginationBar from "../components/Pagination/PaginationBar";
 import ActionColumn from "../components/Tables/ActionColumn";
 import api from "../constants/api";
 import { TableType } from "../constants/enum";
@@ -31,9 +32,13 @@ import {
 const Projects = ({
   projects,
   organisationId,
+  currentPage,
+  totalPages,
 }: {
   projects: ProjectModel[];
   organisationId: string;
+  currentPage: number;
+  totalPages: number;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [stateProjects, setStateProjects] = useState(projects);
@@ -41,7 +46,7 @@ const Projects = ({
 
   useEffect(() => {
     projectContext.setProjects(projects);
-  }, []);
+  }, [projects]);
 
   useEffect(() => {
     setStateProjects(projectContext.projects);
@@ -82,10 +87,13 @@ const Projects = ({
     setStateProjects(projects);
   };
 
-  const editProject = (
+  const changePage = (
     e: React.MouseEvent<HTMLButtonElement>,
-    id: string
-  ) => {};
+    newPage: number
+  ) => {
+    e.stopPropagation();
+    Router.push(`/projects?page=${newPage}`);
+  };
 
   return (
     <>
@@ -138,6 +146,15 @@ const Projects = ({
                 Create Project
               </Td>
             </Tr>
+            <Tr>
+              <Td colSpan={5} textAlign="center">
+                <PaginationBar
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={changePage}
+                />
+              </Td>
+            </Tr>
           </Tbody>
         </Table>
       </HomeFlexCard>
@@ -161,11 +178,18 @@ export const getServerSideProps = async (context: {
     return invalidateUserAuthentication();
   }
 
-  let projects: ProjectModel[] = [];
+  let page = context.query.page;
+  let offset = 0;
+  if (page) {
+    page = parseInt(page);
+    offset = (page - 1) * 1;
+  }
+
+  let projects;
   if (organisation) {
     projects = (
-      await axios.get<ProjectModel[]>(
-        `${api.PROJECTS_ROUTE}${organisation}`,
+      await axios.get(
+        `${api.PROJECTS_ROUTE}${organisation}?offset=${offset}&limit=1`,
         constructAuthHeader(token)
       )
     ).data;
@@ -175,9 +199,11 @@ export const getServerSideProps = async (context: {
     props: {
       token,
       refreshToken,
-      projects,
+      projects: projects.projects ?? [],
       projectId: projectId ?? null,
       organisationId: organisation ?? null,
+      totalPages: projects.page.totalPages,
+      currentPage: page ?? 1,
     },
   };
 };
