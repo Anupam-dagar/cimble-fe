@@ -13,12 +13,14 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Router from "next/router";
 import React, { useContext, useState } from "react";
 import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
 import { createOrganisationApi } from "../../apicalls/organisations";
 import api from "../../constants/api";
 import { OrganisationModel } from "../../models/organisation";
 import OrganisationsContext from "../../store/organisationsContext";
+import { clearCookies } from "../../utils/auth";
 import {
   createNotification,
   updateNotification,
@@ -46,7 +48,14 @@ const CreateOrganisationModal = ({ isOpen, onOpen, onClose }: any) => {
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           result = (await createOrganisationApi(data, refreshLoginResult.token))
             .data;
         } catch (err: any) {

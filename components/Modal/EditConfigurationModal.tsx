@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Router from "next/router";
 import React, { useContext, useState } from "react";
 import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
 import { editConfigurationsApi } from "../../apicalls/configurations";
@@ -24,6 +25,7 @@ import {
   updateNotification,
 } from "../../utils/notification";
 import BlurOverlay from "../Overlays/BlurOverlay";
+import { clearCookies } from "../../utils/auth";
 
 const EditConfigurationModal = ({
   isOpen,
@@ -61,7 +63,14 @@ const EditConfigurationModal = ({
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           result = (
             await editConfigurationsApi(
               Cookies.get("projectId") ?? "",

@@ -27,6 +27,7 @@ import HomeLayout from "../../layouts/HomeLayout";
 import { ConfigurationsModel } from "../../models/configurations";
 import ConfigurationsContext from "../../store/configurationsContext";
 import {
+  clearCookies,
   constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
@@ -71,7 +72,14 @@ const ProjectConfigurations = ({
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           await deleteConfigurationsApi(
             projectId ?? "",
             id,
@@ -230,6 +238,7 @@ export const getServerSideProps = async (context: any) => {
   ).data;
 
   let isError = false;
+  let refreshLoginFailed = false;
   try {
     configurations = (
       await getConfigurationsApi(selectedProjectId, offset, token)
@@ -237,12 +246,18 @@ export const getServerSideProps = async (context: any) => {
   } catch (err: any) {
     if (err.response.status === 403) {
       try {
-        const refreshLoginResult = (await refreshLogin(refreshToken)).data;
-        setAuthCookies(
-          context.res,
-          refreshLoginResult.token,
-          refreshLoginResult.refreshToken
-        );
+        let refreshLoginResult;
+        try {
+          refreshLoginResult = (await refreshLogin(refreshToken)).data;
+          setAuthCookies(
+            context.res,
+            refreshLoginResult.token,
+            refreshLoginResult.refreshToken
+          );
+        } catch (err: any) {
+          refreshLoginFailed = true;
+        }
+
         configurations = (
           await getConfigurationsApi(selectedProjectId, offset, token)
         ).data;
@@ -250,6 +265,10 @@ export const getServerSideProps = async (context: any) => {
         isError = true;
       }
     }
+  }
+
+  if (refreshLoginFailed) {
+    return invalidateUserAuthentication();
   }
 
   return {

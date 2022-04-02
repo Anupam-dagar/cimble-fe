@@ -26,6 +26,7 @@ import HomeLayout from "../layouts/HomeLayout";
 import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
 import {
+  clearCookies,
   invalidateUserAuthentication,
   parseDataFromCookie,
   setAuthCookies,
@@ -69,7 +70,14 @@ const Organisations = ({
       console.log(err.response.status);
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           await deleteOrganisationsApi(id, refreshLoginResult.refreshToken);
         } catch (err: any) {
           throw err;
@@ -218,23 +226,33 @@ export const getServerSideProps = async (context: any) => {
 
   let result;
   let isError = false;
+  let refreshLoginFailed = false;
   try {
     result = (await getOrganisationsApi(offset, token)).data;
   } catch (err: any) {
     if (err.response.status === 403) {
       try {
-        const refreshLoginResult = (await refreshLogin(refreshToken)).data;
-        setAuthCookies(
-          context.res,
-          refreshLoginResult.token,
-          refreshLoginResult.refreshToken
-        );
+        let refreshLoginResult;
+        try {
+          refreshLoginResult = (await refreshLogin(refreshToken)).data;
+          setAuthCookies(
+            context.res,
+            refreshLoginResult.token,
+            refreshLoginResult.refreshToken
+          );
+        } catch (err: any) {
+          refreshLoginFailed = true;
+        }
         result = (await getOrganisationsApi(offset, refreshLoginResult.token))
           .data;
       } catch (err: any) {
         isError = true;
       }
     }
+  }
+
+  if (refreshLoginFailed) {
+    return invalidateUserAuthentication();
   }
 
   return {

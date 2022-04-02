@@ -1,4 +1,5 @@
 import cookie from "cookie";
+import Cookies from "js-cookie";
 
 export const parseDataFromCookie = (reqCookie?: any) => {
   let isAuthenticated = false;
@@ -65,4 +66,11 @@ export const setAuthCookies = (
       path: "/",
     }),
   ]);
+};
+
+export const clearCookies = () => {
+  Cookies.remove("projectId");
+  Cookies.remove("organisation");
+  Cookies.remove("token");
+  Cookies.remove("refreshToken");
 };

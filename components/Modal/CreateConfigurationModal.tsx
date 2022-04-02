@@ -21,6 +21,8 @@ import {
 } from "../../utils/notification";
 import { createConfigurationsApi } from "../../apicalls/configurations";
 import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
+import { clearCookies } from "../../utils/auth";
+import Router from "next/router";
 
 const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
   const [name, setName] = useState("");
@@ -50,7 +52,14 @@ const CreateConfigurationModal = ({ isOpen, onOpen, onClose }: any) => {
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           result = (
             await createConfigurationsApi(
               Cookies.get("projectId") ?? "",

@@ -30,6 +30,7 @@ import {
   parseDataFromCookie,
   invalidateUserAuthentication,
   setAuthCookies,
+  clearCookies,
 } from "../utils/auth";
 
 const Projects = ({
@@ -85,7 +86,14 @@ const Projects = ({
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           await deleteProjectsApi(id, refreshLoginResult.refreshToken);
         } catch (err: any) {
           throw err;
@@ -196,18 +204,25 @@ export const getServerSideProps = async (context: any) => {
 
   let projects;
   let isError = false;
+  let refreshLoginFailed = false;
   if (organisation) {
     try {
       projects = (await getProjectsApi(organisation, offset, token)).data;
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshLogin(refreshToken)).data;
-          setAuthCookies(
-            context.res,
-            refreshLoginResult.token,
-            refreshLoginResult.refreshToken
-          );
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshLogin(refreshToken)).data;
+            setAuthCookies(
+              context.res,
+              refreshLoginResult.token,
+              refreshLoginResult.refreshToken
+            );
+          } catch (err: any) {
+            refreshLoginFailed = true;
+          }
+
           projects = (
             await getProjectsApi(organisation, offset, refreshLoginResult.token)
           ).data;
@@ -216,6 +231,10 @@ export const getServerSideProps = async (context: any) => {
         }
       }
     }
+  }
+
+  if (refreshLoginFailed) {
+    return invalidateUserAuthentication();
   }
 
   return {

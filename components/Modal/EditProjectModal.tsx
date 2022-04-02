@@ -13,12 +13,14 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Router from "next/router";
 import React, { useContext, useState } from "react";
 import { refreshLogin, refreshNextLogin } from "../../apicalls/auth";
 import { editProjectApi } from "../../apicalls/projects";
 import api from "../../constants/api";
 import { ProjectModel } from "../../models/project";
 import ProjectsContext from "../../store/projectsContext";
+import { clearCookies } from "../../utils/auth";
 import {
   createNotification,
   updateNotification,
@@ -48,7 +50,14 @@ const EditProjectModal = ({
     } catch (err: any) {
       if (err.response.status === 403) {
         try {
-          const refreshLoginResult = (await refreshNextLogin()).data;
+          let refreshLoginResult;
+          try {
+            refreshLoginResult = (await refreshNextLogin()).data;
+          } catch (err: any) {
+            clearCookies();
+            Router.replace("/login");
+            return;
+          }
           result = (await editProjectApi(data, id, refreshLoginResult.token))
             .data;
         } catch (err: any) {
