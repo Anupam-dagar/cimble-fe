@@ -27,6 +27,7 @@ import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
 import {
   clearCookies,
+  clearCookiesServerSide,
   invalidateUserAuthentication,
   parseDataFromCookie,
   setAuthCookies,
@@ -252,6 +253,7 @@ export const getServerSideProps = async (context: any) => {
   }
 
   if (refreshLoginFailed) {
+    clearCookiesServerSide(context.res);
     return invalidateUserAuthentication();
   }
 

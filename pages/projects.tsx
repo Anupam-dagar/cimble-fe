@@ -31,6 +31,7 @@ import {
   invalidateUserAuthentication,
   setAuthCookies,
   clearCookies,
+  clearCookiesServerSide,
 } from "../utils/auth";
 
 const Projects = ({
@@ -234,6 +235,7 @@ export const getServerSideProps = async (context: any) => {
   }
 
   if (refreshLoginFailed) {
+    clearCookiesServerSide(context.res);
     return invalidateUserAuthentication();
   }
 

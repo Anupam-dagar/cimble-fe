@@ -1,4 +1,5 @@
 import cookie from "cookie";
+import { clearCookiesServerSide } from "../../utils/auth";
 
 export default async (
   req: { method: string },
@@ -17,36 +18,7 @@ export default async (
     return;
   }
 
-  res.setHeader("Set-Cookie", [
-    cookie.serialize("token", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      expires: new Date(0),
-      sameSite: "strict",
-      path: "/",
-    }),
-    cookie.serialize("refreshToken", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      expires: new Date(0),
-      sameSite: "strict",
-      path: "/",
-    }),
-    cookie.serialize("organisation", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      expires: new Date(0),
-      sameSite: "strict",
-      path: "/",
-    }),
-    cookie.serialize("projectId", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      expires: new Date(0),
-      sameSite: "strict",
-      path: "/",
-    }),
-  ]);
+  clearCookiesServerSide(res);
 
   res.status(200).json({ message: "Logout Successfully" });
 };

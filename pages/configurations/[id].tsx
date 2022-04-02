@@ -28,6 +28,7 @@ import { ConfigurationsModel } from "../../models/configurations";
 import ConfigurationsContext from "../../store/configurationsContext";
 import {
   clearCookies,
+  clearCookiesServerSide,
   constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
@@ -268,6 +269,7 @@ export const getServerSideProps = async (context: any) => {
   }
 
   if (refreshLoginFailed) {
+    clearCookiesServerSide(context.res);
     return invalidateUserAuthentication();
   }
 

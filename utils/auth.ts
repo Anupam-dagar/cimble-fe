@@ -74,3 +74,36 @@ export const clearCookies = () => {
   Cookies.remove("token");
   Cookies.remove("refreshToken");
 };
+
+export const clearCookiesServerSide = (res: any) => {
+  res.setHeader("Set-Cookie", [
+    cookie.serialize("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("refreshToken", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("organisation", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("projectId", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      expires: new Date(0),
+      sameSite: "strict",
+      path: "/",
+    }),
+  ]);
+};
