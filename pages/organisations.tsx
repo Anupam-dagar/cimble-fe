@@ -14,17 +14,18 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { refreshLogin } from "../apicalls/auth";
-import { getOrganisationsApi } from "../apicalls/organisations";
+import {
+  deleteOrganisationsApi,
+  getOrganisationsApi,
+} from "../apicalls/organisations";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
 import PaginationBar from "../components/Pagination/PaginationBar";
 import ActionColumn from "../components/Tables/ActionColumn";
-import api from "../constants/api";
 import { TableType } from "../constants/enum";
 import HomeLayout from "../layouts/HomeLayout";
 import { OrganisationModel } from "../models/organisation";
 import OrganisationsContext from "../store/organisationsContext";
 import {
-  constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
   setAuthCookies,
@@ -62,10 +63,20 @@ const Organisations = ({
     id: string
   ) => {
     e.stopPropagation();
-    await axios.delete(
-      `${api.ORGANISATIONS_ROUTE}${id}`,
-      constructAuthHeader(localStorage.getItem("token") ?? "")
-    );
+    try {
+      await deleteOrganisationsApi(id, localStorage.getItem("token") ?? "");
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (
+            await refreshLogin(localStorage.getItem("refreshToken") ?? "")
+          ).data;
+          await deleteOrganisationsApi(id, refreshLoginResult.refreshToken);
+        } catch (err: any) {
+          throw err;
+        }
+      }
+    }
     const organisations = stateOrganisations.filter((organisation) => {
       return organisation.id !== id;
     });

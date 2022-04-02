@@ -14,7 +14,10 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { refreshLogin } from "../../apicalls/auth";
-import { getConfigurationsApi } from "../../apicalls/configurations";
+import {
+  deleteConfigurationsApi,
+  getConfigurationsApi,
+} from "../../apicalls/configurations";
 import CreateConfigurationModal from "../../components/Modal/CreateConfigurationModal";
 import PaginationBar from "../../components/Pagination/PaginationBar";
 import ActionColumn from "../../components/Tables/ActionColumn";
@@ -59,10 +62,28 @@ const ProjectConfigurations = ({
   ) => {
     e.stopPropagation();
     const projectId = Cookies.get("projectId");
-    await axios.delete(
-      `${api.CONFIGURATIONS_ROUTE}${projectId}/${id}`,
-      constructAuthHeader(localStorage.getItem("token") ?? "")
-    );
+    try {
+      await deleteConfigurationsApi(
+        projectId ?? "",
+        id,
+        localStorage.getItem("token") ?? ""
+      );
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (
+            await refreshLogin(localStorage.getItem("refreshToken") ?? "")
+          ).data;
+          await deleteConfigurationsApi(
+            projectId ?? "",
+            id,
+            refreshLoginResult.refreshToken
+          );
+        } catch (err: any) {
+          throw err;
+        }
+      }
+    }
     const configurations = stateConfigurations.filter((configuration) => {
       return configuration.id !== id;
     });

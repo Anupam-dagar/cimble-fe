@@ -14,7 +14,7 @@ import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { refreshLogin } from "../apicalls/auth";
-import { getProjectsApi } from "../apicalls/projects";
+import { deleteProjectsApi, getProjectsApi } from "../apicalls/projects";
 import AlertComponent from "../components/AlertComponent";
 import HomeFlexCard from "../components/Cards/HomeFlexCard";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
@@ -80,10 +80,20 @@ const Projects = ({
     id: string
   ) => {
     e.stopPropagation();
-    await axios.delete(
-      `${api.PROJECTS_ROUTE}${id}`,
-      constructAuthHeader(localStorage.getItem("token") ?? "")
-    );
+    try {
+      await deleteProjectsApi(id, localStorage.getItem("token") ?? "");
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (
+            await refreshLogin(localStorage.getItem("refreshToken") ?? "")
+          ).data;
+          await deleteProjectsApi(id, refreshLoginResult.refreshToken);
+        } catch (err: any) {
+          throw err;
+        }
+      }
+    }
     const projects = stateProjects.filter((project) => {
       return project.id !== id;
     });
