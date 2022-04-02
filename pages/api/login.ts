@@ -32,14 +32,12 @@ export default async function handler(
 
   res.setHeader("Set-Cookie", [
     cookie.serialize("token", String(result.token), {
-      httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       maxAge: 60 * 60 * 24 * 7,
       sameSite: "strict",
       path: "/",
     }),
     cookie.serialize("refreshToken", String(result.refreshToken), {
-      httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       maxAge: 60 * 60 * 24 * 7,
       sameSite: "strict",

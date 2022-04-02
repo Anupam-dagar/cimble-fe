@@ -13,6 +13,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
+import { refreshLogin } from "../apicalls/auth";
+import { getOrganisationsApi } from "../apicalls/organisations";
 import CreateOrganisationModal from "../components/Modal/CreateOrganisationModal";
 import PaginationBar from "../components/Pagination/PaginationBar";
 import ActionColumn from "../components/Tables/ActionColumn";
@@ -25,6 +27,7 @@ import {
   constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
+  setAuthCookies,
 } from "../utils/auth";
 
 const Organisations = ({
@@ -41,12 +44,10 @@ const Organisations = ({
   const organisationContext = useContext(OrganisationsContext);
 
   useEffect(() => {
-    console.log("empty useeffect");
     organisationContext.setOrganisations(organisations);
   }, [organisations]);
 
   useEffect(() => {
-    console.log("context useeffect");
     setStateOrganisations(organisationContext.organisations);
   }, [organisationContext]);
 
@@ -189,13 +190,10 @@ Organisations.getLayout = function getLayout(page: ReactElement) {
   return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
-export const getServerSideProps = async (context: {
-  query: any;
-  req: { headers: { cookie: string } };
-}) => {
+export const getServerSideProps = async (context: any) => {
   const { token, refreshToken } = parseDataFromCookie(context);
 
-  if (!token) {
+  if (!token || !refreshToken) {
     return invalidateUserAuthentication();
   }
 
@@ -206,21 +204,35 @@ export const getServerSideProps = async (context: {
     offset = (page - 1) * 10;
   }
 
-  const result = (
-    await axios.get(`${api.ORGANISATIONS_ROUTE}?offset=${offset}&limit=10`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-  ).data;
+  let result;
+  let isError = false;
+  try {
+    result = (await getOrganisationsApi(offset, token)).data;
+  } catch (err: any) {
+    if (err.response.status === 403) {
+      try {
+        const refreshLoginResult = (await refreshLogin(refreshToken)).data;
+        setAuthCookies(
+          context.res,
+          refreshLoginResult.token,
+          refreshLoginResult.refreshToken
+        );
+        result = (await getOrganisationsApi(offset, refreshLoginResult.token))
+          .data;
+      } catch (err: any) {
+        isError = true;
+      }
+    }
+  }
 
   return {
     props: {
       token,
       refreshToken,
-      organisations: result.organisations,
+      organisations: result?.organisations ?? [],
       currentPage: page ?? 1,
-      totalPages: result.page.totalPages,
+      totalPages: result?.page?.totalPages ?? 1,
+      isError,
     },
   };
 };

@@ -13,6 +13,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
+import { refreshLogin } from "../apicalls/auth";
+import { getProjectsApi } from "../apicalls/projects";
 import AlertComponent from "../components/AlertComponent";
 import HomeFlexCard from "../components/Cards/HomeFlexCard";
 import CreateProjectModal from "../components/Modal/CreateProjectModal";
@@ -27,6 +29,7 @@ import {
   constructAuthHeader,
   parseDataFromCookie,
   invalidateUserAuthentication,
+  setAuthCookies,
 } from "../utils/auth";
 
 const Projects = ({
@@ -167,14 +170,11 @@ Projects.getLayout = function getLayout(page: ReactElement) {
   return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
-export const getServerSideProps = async (context: {
-  query: any;
-  req: { headers: { cookie: string } };
-}) => {
+export const getServerSideProps = async (context: any) => {
   const { token, refreshToken, organisation, projectId } =
     parseDataFromCookie(context);
 
-  if (!token) {
+  if (!token || !refreshToken) {
     return invalidateUserAuthentication();
   }
 
@@ -186,24 +186,39 @@ export const getServerSideProps = async (context: {
   }
 
   let projects;
+  let isError = false;
   if (organisation) {
-    projects = (
-      await axios.get(
-        `${api.PROJECTS_ROUTE}${organisation}?offset=${offset}&limit=10`,
-        constructAuthHeader(token)
-      )
-    ).data;
+    try {
+      projects = (await getProjectsApi(organisation, offset, token)).data;
+    } catch (err: any) {
+      if (err.response.status === 403) {
+        try {
+          const refreshLoginResult = (await refreshLogin(refreshToken)).data;
+          setAuthCookies(
+            context.res,
+            refreshLoginResult.token,
+            refreshLoginResult.refreshToken
+          );
+          projects = (
+            await getProjectsApi(organisation, offset, refreshLoginResult.token)
+          ).data;
+        } catch (err: any) {
+          isError = true;
+        }
+      }
+    }
   }
 
   return {
     props: {
       token,
       refreshToken,
-      projects: projects.projects ?? [],
+      projects: projects?.projects ?? [],
       projectId: projectId ?? null,
       organisationId: organisation ?? null,
-      totalPages: projects.page.totalPages,
+      totalPages: projects?.page?.totalPages ?? 1,
       currentPage: page ?? 1,
+      isError,
     },
   };
 };

@@ -13,6 +13,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Router from "next/router";
 import { ReactElement, useContext, useEffect, useState } from "react";
+import { refreshLogin } from "../../apicalls/auth";
+import { getConfigurationsApi } from "../../apicalls/configurations";
 import CreateConfigurationModal from "../../components/Modal/CreateConfigurationModal";
 import PaginationBar from "../../components/Pagination/PaginationBar";
 import ActionColumn from "../../components/Tables/ActionColumn";
@@ -25,6 +27,7 @@ import {
   constructAuthHeader,
   invalidateUserAuthentication,
   parseDataFromCookie,
+  setAuthCookies,
 } from "../../utils/auth";
 
 const ProjectConfigurations = ({
@@ -182,13 +185,10 @@ ProjectConfigurations.getLayout = function getLayout(page: ReactElement) {
   return <HomeLayout projectId={page.props.projectId}>{page}</HomeLayout>;
 };
 
-export const getServerSideProps = async (context: {
-  query: any;
-  req: { headers: { cookie: string } };
-}) => {
+export const getServerSideProps = async (context: any) => {
   const { token, refreshToken, projectId } = parseDataFromCookie(context);
 
-  if (!token) {
+  if (!token || !refreshToken) {
     return invalidateUserAuthentication();
   }
 
@@ -200,21 +200,46 @@ export const getServerSideProps = async (context: {
   }
 
   const { id: selectedProjectId }: { id: string } = context.query;
-  const configurations = (
+  let configurations;
+  const a = (
     await axios.get(
       `${api.CONFIGURATIONS_ROUTE}${selectedProjectId}?offset=${offset}&limit=10`,
       constructAuthHeader(token)
     )
   ).data;
 
+  let isError = false;
+  try {
+    configurations = (
+      await getConfigurationsApi(selectedProjectId, offset, token)
+    ).data;
+  } catch (err: any) {
+    if (err.response.status === 403) {
+      try {
+        const refreshLoginResult = (await refreshLogin(refreshToken)).data;
+        setAuthCookies(
+          context.res,
+          refreshLoginResult.token,
+          refreshLoginResult.refreshToken
+        );
+        configurations = (
+          await getConfigurationsApi(selectedProjectId, offset, token)
+        ).data;
+      } catch (err: any) {
+        isError = true;
+      }
+    }
+  }
+
   return {
     props: {
       token,
       refreshToken,
-      configurations: configurations.configurations,
+      configurations: configurations?.configurations ?? [],
       projectId: projectId ?? null,
-      totalPages: configurations.page.totalPages,
+      totalPages: configurations?.page?.totalPages ?? 1,
       currentPage: page ?? 1,
+      isError,
     },
   };
 };

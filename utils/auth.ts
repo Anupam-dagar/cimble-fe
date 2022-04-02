@@ -1,9 +1,6 @@
 import cookie from "cookie";
 
-export const parseDataFromCookie = (context: {
-  query: any;
-  req: { headers: { cookie: string } };
-}) => {
+export const parseDataFromCookie = (context: any) => {
   let isAuthenticated = false;
   let token = null;
   let refreshToken = null;
@@ -48,4 +45,25 @@ export const constructAuthHeader = (token: string) => {
       Authorization: `Bearer ${token}`,
     },
   };
+};
+
+export const setAuthCookies = (
+  res: any,
+  token: string,
+  refreshToken: string
+) => {
+  res.setHeader("Set-Cookie", [
+    cookie.serialize("token", String(token), {
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: "strict",
+      path: "/",
+    }),
+    cookie.serialize("refreshToken", String(refreshToken), {
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: "strict",
+      path: "/",
+    }),
+  ]);
 };
