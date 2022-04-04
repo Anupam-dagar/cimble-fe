@@ -100,12 +100,15 @@ const Management = ({
         }
       }
     }
-    const apiKeys = stateApiKeys.map((apikey) => {
-      if (apikey.id === id) {
-        apikey.revoked = 1;
-      }
-      return apikey;
+    const apiKeys = stateApiKeys.filter((apikey) => {
+      return apikey.id !== id;
     });
+    // const apiKeys = stateApiKeys.filter((apikey) => {
+    //   if (apikey.id === id) {
+    //     apikey.revoked = 1;
+    //   }
+    //   return apikey;
+    // });
     setStateApiKeys(apiKeys);
   };
 
