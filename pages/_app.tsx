@@ -7,6 +7,7 @@ import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 import { ProjectsContextProvider } from "../store/projectsContext";
 import { ConfigurationsContextProvider } from "../store/configurationsContext";
+import { ApiKeysContextProvider } from "../store/apikeysContext";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -24,7 +25,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       <OrganisationsContextProvider>
         <ProjectsContextProvider>
           <ConfigurationsContextProvider>
-            {getLayout(<Component {...pageProps} />)}
+            <ApiKeysContextProvider>
+              {getLayout(<Component {...pageProps} />)}
+            </ApiKeysContextProvider>
           </ConfigurationsContextProvider>
         </ProjectsContextProvider>
       </OrganisationsContextProvider>

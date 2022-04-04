@@ -10,4 +10,5 @@ export default {
   PROJECTS_ROUTE: `${env.BACKEND_URL}/api/project/`,
   CONFIGURATIONS_ROUTE: `${env.BACKEND_URL}/api/configuration/`,
   REFRESH_TOKEN_ROUTE: `${env.BACKEND_URL}/api/auth/refreshToken/`,
+  API_KEYS_ROUTE: `${env.BACKEND_URL}/api/api-keys/`,
 };

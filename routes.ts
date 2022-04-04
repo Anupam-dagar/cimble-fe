@@ -28,6 +28,13 @@ const routes = [
     separator: false,
   },
   {
+    path: "/management",
+    name: "Api Keys",
+    icon: `<SunIcon color="inherit" />`,
+    layout: "/admin",
+    separator: true,
+  },
+  {
     path: "/logout",
     name: "Logout",
     icon: `<SunIcon color="inherit" />`,

@@ -1,3 +1,4 @@
+import { ApiKeysModel } from "./apikeys";
 import { ConfigurationsModel } from "./configurations";
 import { OrganisationModel } from "./organisation";
 import { ProjectModel } from "./project";
@@ -21,4 +22,11 @@ export interface ConfigurationContextModel {
   addConfiguration(configuration: ConfigurationsModel): void;
   setConfigurations(configurations: ConfigurationsModel[]): void;
   editConfiguration(configuration: ConfigurationsModel): void;
+}
+
+export interface ApiKeysContextModel {
+  apikeys: ApiKeysModel[];
+  addApiKey(apikey: ApiKeysModel): void;
+  setApiKeys(apikeys: ApiKeysModel[]): void;
+  revokeApiKey(apikey: ApiKeysModel): void;
 }

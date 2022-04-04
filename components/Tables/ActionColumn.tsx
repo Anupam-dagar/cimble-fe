@@ -18,6 +18,7 @@ const ActionColumn = ({
   type,
   name,
   info,
+  revoked,
 }: {
   id: string;
   onDelete: (
@@ -25,8 +26,9 @@ const ActionColumn = ({
     id: string
   ) => Promise<void>;
   type: TableType;
-  name: string;
+  name?: string;
   info?: string;
+  revoked?: number;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -96,6 +98,7 @@ const ActionColumn = ({
             aria-label="Edit Organisation"
             icon={<EditIcon />}
             onClick={onEditClick}
+            display={revoked === 1 || revoked === 0 ? "none" : "inline-flex"}
           />
         </Tooltip>
 
@@ -106,6 +109,7 @@ const ActionColumn = ({
             aria-label="Delete Organisation"
             icon={<DeleteIcon />}
             onClick={onDeleteClick}
+            disabled={revoked ? true : false}
           />
         </Tooltip>
       </ButtonGroup>
